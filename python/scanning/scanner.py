@@ -1,9 +1,8 @@
 """This module implements the scanner logic for the jlox language
 """
 
-from typing import List
-
 from scanning.token import Token
+from scanning.token_type import TokenType
 
 
 class Scanner:
@@ -26,5 +25,34 @@ class Scanner:
         self.source = source
         self.tokens = []
         self.start = 0
-        self.end = 0
-        self.line = 0
+        self.current = 0
+        self.line = 1
+
+    def advance(self) -> str:
+        """Returns the current character and advances the current index.
+
+        Returns:
+            The last character consumed.
+        """
+        c = self.source[self.current]
+        self.current = self.current + 1
+        return c
+
+    def append_token(self, token_type: TokenType, literal: object = None):
+        """Appends a new token to the token list.
+
+        Args:
+            type: TokenType of the new token.
+            literal: object representing the parsed token.
+        """
+
+        lexeme = self.source[self.start : self.current]
+        self.tokens.append(Token(token_type, lexeme, literal, self.line))
+
+    def end(self):
+        """Checks if the scanner has consumed all the source text.
+
+        Returns:
+            A boolean indicating if the input source code has been consumed.
+        """
+        return self.current >= len(self.source)
