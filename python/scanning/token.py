@@ -9,7 +9,7 @@ from scanning.token_type import TokenType
 class Token:
     """Class representing a lox token."""
 
-    type: TokenType
+    token_type: TokenType
     lexeme: str
     literal: object
     line: int
