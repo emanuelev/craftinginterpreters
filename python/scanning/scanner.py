@@ -1,6 +1,8 @@
 """This module implements the scanner logic for the jlox language
 """
 
+import logging
+
 from scanning.token import Token
 from scanning.token_type import TokenType
 
@@ -56,3 +58,33 @@ class Scanner:
             A boolean indicating if the input source code has been consumed.
         """
         return self.current >= len(self.source)
+
+    def scan_token(self):
+        """Parses the current token and adds it to the token list."""
+
+        c = self.advance()
+        match c:
+            case "(":
+                self.append_token(TokenType.LEFT_PAREN)
+            case ")":
+                self.append_token(TokenType.RIGHT_PAREN)
+            case "{":
+                self.append_token(TokenType.LEFT_BRACE)
+            case "}":
+                self.append_token(TokenType.RIGHT_BRACE)
+            case ",":
+                self.append_token(TokenType.COMMA)
+            case ".":
+                self.append_token(TokenType.DOT)
+            case "-":
+                self.append_token(TokenType.MINUS)
+            case "+":
+                self.append_token(TokenType.PLUS)
+            case ";":
+                self.append_token(TokenType.SEMICOLON)
+            case "/":
+                self.append_token(TokenType.SLASH)
+            case "*":
+                self.append_token(TokenType.STAR)
+            case _:
+                logging.error(f"line {self.line}: Unexpected character")

@@ -7,6 +7,7 @@ from enum import Enum, auto
 class TokenType(Enum):
     """Enum class representing valid token types."""
 
+    # Single char tokens.
     LEFT_PAREN = auto()
     RIGHT_PAREN = auto()
     LEFT_BRACE = auto()
@@ -19,6 +20,7 @@ class TokenType(Enum):
     SLASH = auto()
     STAR = auto()
 
+    # One or two chars tokens.
     BANG = auto()
     BANG_EQUAL = auto()
     EQUAL = auto()
@@ -28,10 +30,12 @@ class TokenType(Enum):
     LESS = auto()
     LESS_EQUAL = auto()
 
+    # Literals.
     IDENTIFIER = auto()
     STRING = auto()
     NUMBER = auto()
 
+    # Keywords.
     AND = auto()
     CLASS = auto()
     ELSE = auto()
@@ -41,7 +45,6 @@ class TokenType(Enum):
     IF = auto()
     NIL = auto()
     OR = auto()
-
     PRINT = auto()
     RETURN = auto()
     SUPER = auto()
