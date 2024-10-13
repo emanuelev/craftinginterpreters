@@ -239,7 +239,7 @@ class Scanner:
             case _:
                 if c.isdigit():
                     self.parse_number()
-                if c.isalpha():
+                elif c.isalpha():
                     self.parse_identifier()
                 else:
                     logging.error(f"line {self.line}: Unexpected character {c}")
