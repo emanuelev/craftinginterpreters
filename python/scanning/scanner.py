@@ -61,7 +61,7 @@ class Scanner:
             `\0' if at EOF, current char otherwise.
         """
         if self.end():
-            return '\0'
+            return "\0"
         return self.source[self.current]
 
     def append_token(self, token_type: TokenType, literal: object = None):
@@ -82,6 +82,29 @@ class Scanner:
             A boolean indicating if the input source code has been consumed.
         """
         return self.current >= len(self.source)
+
+    def parse_string(self):
+        """Parses a multiline string and appends it to the token list.
+
+        Example:
+            "I am a string with a
+             slash-n in the middle."
+        """
+
+        while self.peek() != '"' and self.end() is False:
+            # Advance till we find the closing "
+            if self.peek() == "\n":
+                self.line += 1
+            self.advance()
+
+        if self.end():
+            logging.error("Unterminated string")
+
+        # Consume the matching "
+        self.advance()
+        self.append_token(
+            TokenType.STRING, self.source[self.start + 1 : self.current - 1]
+        )
 
     def scan_tokens(self) -> List[Token]:
         """Parses the source code and returns the corresponding list of tokens
@@ -137,18 +160,21 @@ class Scanner:
                 )
             case "/":
                 # Slash can be either division or the start of a comment.
-                if self.match('/'):
+                if self.match("/"):
                     # A comment can span a line, so throw away characters till
                     # a newline is found.
-                    while(self.peek() != '\n' and self.end() is False):
+                    while self.peek() != "\n" and self.end() is False:
                         self.advance()
                 else:
                     self.append_token(TokenType.SLASH)
-            case '\n':
+            case "\n":
                 self.line += 1
 
+            case '"':
+                self.parse_string()
+
             # Ignore white spaces, carriage returns and tabs
-            case ' ' | '\r' | '\t':
+            case " " | "\r" | "\t":
                 pass
             case _:
                 logging.error(f"line {self.line}: Unexpected character {c}")
