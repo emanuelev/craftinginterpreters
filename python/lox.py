@@ -27,6 +27,9 @@ def run(script: str):
         script: input lox script to be run.
     """
     scanner = Scanner(script)
+    tokens = scanner.scan_tokens()
+    for t in tokens:
+        print(t)
 
 
 def run_prompt():
@@ -39,7 +42,7 @@ def main():
     if args.filepath:
         if os.path.isfile(args.filepath):
             with open(args.filepath, "r", encoding="utf-8") as file:
-                script = file.readlines()
+                script = file.read()
                 run(script)
         else:
             raise ValueError(f"Provided file {args.filepath} is not a file.")
