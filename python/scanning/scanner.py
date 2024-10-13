@@ -7,6 +7,25 @@ from typing import List
 from scanning.token import Token
 from scanning.token_type import TokenType
 
+keywords = {
+    "and": TokenType.AND,
+    "class": TokenType.CLASS,
+    "else": TokenType.ELSE,
+    "false": TokenType.FALSE,
+    "fun": TokenType.FUN,
+    "for": TokenType.FOR,
+    "if": TokenType.IF,
+    "nil": TokenType.NIL,
+    "or": TokenType.OR,
+    "print": TokenType.PRINT,
+    "return": TokenType.RETURN,
+    "super": TokenType.SUPER,
+    "this": TokenType.THIS,
+    "true": TokenType.TRUE,
+    "var": TokenType.VAR,
+    "while": TokenType.WHILE,
+}
+
 
 class Scanner:
     """Class implementing text scanning for the lox language.
@@ -64,6 +83,16 @@ class Scanner:
             return "\0"
         return self.source[self.current]
 
+    def peek_next(self) -> str:
+        """Returns the next current char if not at end of stream, EOF otherwise.
+
+        Returns:
+            `\0' if at EOF, current char otherwise.
+        """
+        if self.current + 1 >= len(self.source):
+            return "\0"
+        return self.source[self.current + 1]
+
     def append_token(self, token_type: TokenType, literal: object = None):
         """Appends a new token to the token list.
 
@@ -105,6 +134,37 @@ class Scanner:
         self.append_token(
             TokenType.STRING, self.source[self.start + 1 : self.current - 1]
         )
+
+    def parse_number(self):
+        """Parses a string representing a number to a python float."""
+        while self.peek().isdigit():
+            self.advance()
+        if self.peek() == "." and self.peek_next().isdigit():
+            self.advance()
+            while self.peek().isdigit():
+                self.advance()
+        number = float(self.source[self.start : self.current])
+        self.append_token(TokenType.NUMBER, number)
+
+    def parse_identifier(self):
+        """Parses a string representing an identifier or a reserved keyword.
+
+        An identifier can be either a reserved word or just an identifier,
+        how to distinguish these?
+        Example: print is the same prefix of the
+        variable printer and the keyword print. We use the maximal munch
+        principle: parse as much as possible and then verify whether the
+        tokes is a keyword.
+        """
+
+        while self.peek().isalnum() or self.peek() == "_":
+            self.advance()
+
+        lexeme = self.source[self.start : self.current]
+        token_type = TokenType.IDENTIFIER
+        if keywords.get(lexeme) is not None:
+            token_type = keywords[lexeme]
+        self.append_token(token_type)
 
     def scan_tokens(self) -> List[Token]:
         """Parses the source code and returns the corresponding list of tokens
@@ -177,4 +237,9 @@ class Scanner:
             case " " | "\r" | "\t":
                 pass
             case _:
-                logging.error(f"line {self.line}: Unexpected character {c}")
+                if c.isdigit():
+                    self.parse_number()
+                if c.isalpha():
+                    self.parse_identifier()
+                else:
+                    logging.error(f"line {self.line}: Unexpected character {c}")
