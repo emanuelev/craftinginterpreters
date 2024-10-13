@@ -128,6 +128,7 @@ class Scanner:
 
         if self.end():
             logging.error("Unterminated string")
+            return
 
         # Consume the matching "
         self.advance()
