@@ -54,6 +54,16 @@ class Scanner:
             return True
         return False
 
+    def peek(self) -> str:
+        """Returns current char if not at end of stream, EOF otherwise.
+
+        Returns:
+            `\0' if at EOF, current char otherwise.
+        """
+        if self.end():
+            return '\0'
+        return self.source[self.current]
+
     def append_token(self, token_type: TokenType, literal: object = None):
         """Appends a new token to the token list.
 
@@ -88,7 +98,6 @@ class Scanner:
         """Parses the current token and adds it to the token list."""
 
         c = self.advance()
-        logging.warning(f"Matching {c}")
         match c:
             case "(":
                 self.append_token(TokenType.LEFT_PAREN)
@@ -108,8 +117,6 @@ class Scanner:
                 self.append_token(TokenType.PLUS)
             case ";":
                 self.append_token(TokenType.SEMICOLON)
-            case "/":
-                self.append_token(TokenType.SLASH)
             case "*":
                 self.append_token(TokenType.STAR)
             case "!":
@@ -128,5 +135,20 @@ class Scanner:
                 self.append_token(
                     TokenType.LESS_EQUAL if self.match("=") else TokenType.EQUAL
                 )
+            case "/":
+                # Slash can be either division or the start of a comment.
+                if self.match('/'):
+                    # A comment can span a line, so throw away characters till
+                    # a newline is found.
+                    while(self.peek() != '\n' and self.end() is False):
+                        self.advance()
+                else:
+                    self.append_token(TokenType.SLASH)
+            case '\n':
+                self.line += 1
+
+            # Ignore white spaces, carriage returns and tabs
+            case ' ' | '\r' | '\t':
+                pass
             case _:
                 logging.error(f"line {self.line}: Unexpected character {c}")
