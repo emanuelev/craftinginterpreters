@@ -15,7 +15,10 @@ def parse_args():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "filepath", type=str, nargs="?", help="Path to the jlox script to be interpreted"
+        "filepath",
+        type=str,
+        nargs="?",
+        help="Path to the jlox script to be interpreted",
     )
 
     return parser.parse_args()
@@ -37,6 +40,7 @@ def run_prompt():
     """Runs interactive ccommand line prompt"""
     for line in sys.stdin:
         run(line)
+
 
 def main():
     """Entry point for the lox interpreter"""
