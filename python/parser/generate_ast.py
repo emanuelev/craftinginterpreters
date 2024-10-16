@@ -50,7 +50,7 @@ def generate_ast(grammar: str):
     output += "# pylint: disable=C0114,C0115,C0116\n\n"
 
     output += "from dataclasses import dataclass\n\n"
-    output += "from scanning.token import Token\n\n"
+    output += "from scanner.token import Token\n\n"
     output += 'class ExpressionBase: # pylint: disable=too-few-public-methods\n\
     """Base class for expression classes"""\n\n'
 
@@ -65,7 +65,7 @@ def generate_ast(grammar: str):
             output += f"    {var}: {var_type}\n"
         output += "\n"
         output += "    def accept(self, visitor):\n"
-        output += f"        return visitor.visit{name}Expr(self)\n\n"
+        output += f"        return visitor.visit_{name.lower()}_expr(self)\n\n"
         output += "\n\n"
     return output
 
