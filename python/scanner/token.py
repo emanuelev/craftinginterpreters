@@ -2,7 +2,7 @@
 """
 
 from dataclasses import dataclass
-from scanning.token_type import TokenType
+from scanner.token_type import TokenType
 
 
 @dataclass

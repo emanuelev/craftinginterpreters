@@ -5,7 +5,7 @@
 
 from dataclasses import dataclass
 
-from scanning.token import Token
+from scanner.token import Token
 
 
 class ExpressionBase:  # pylint: disable=too-few-public-methods
@@ -19,7 +19,7 @@ class LiteralExpr(ExpressionBase):
     value: object
 
     def accept(self, visitor):
-        return visitor.visitLiteralExpr(self)
+        return visitor.visit_literal_expr(self)
 
 
 @dataclass
@@ -30,7 +30,7 @@ class UnaryExpr(ExpressionBase):
     expr: ExpressionBase
 
     def accept(self, visitor):
-        return visitor.visitUnaryExpr(self)
+        return visitor.visit_unary_expr(self)
 
 
 @dataclass
@@ -42,7 +42,7 @@ class BinaryExpr(ExpressionBase):
     right: ExpressionBase
 
     def accept(self, visitor):
-        return visitor.visitBinaryExpr(self)
+        return visitor.visit_binary_expr(self)
 
 
 @dataclass
@@ -52,4 +52,4 @@ class GroupingExpr(ExpressionBase):
     expr: ExpressionBase
 
     def accept(self, visitor):
-        return visitor.visitGroupingExpr(self)
+        return visitor.visit_grouping_expr(self)

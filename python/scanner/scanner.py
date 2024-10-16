@@ -4,8 +4,8 @@
 import logging
 from typing import List
 
-from scanning.token import Token
-from scanning.token_type import TokenType
+from scanner.token import Token
+from scanner.token_type import TokenType
 
 keywords = {
     "and": TokenType.AND,
@@ -84,7 +84,8 @@ class Scanner:
         return self.source[self.current]
 
     def peek_next(self) -> str:
-        """Returns the next current char if not at end of stream, EOF otherwise.
+        """Returns the next current char if not at end of stream, EOF
+        otherwise.
 
         Returns:
             `\0' if at EOF, current char otherwise.
@@ -101,7 +102,7 @@ class Scanner:
             literal: object representing the parsed token.
         """
 
-        lexeme = self.source[self.start : self.current]
+        lexeme = self.source[self.start:self.current]
         self.tokens.append(Token(token_type, lexeme, literal, self.line))
 
     def end(self):
@@ -133,7 +134,7 @@ class Scanner:
         # Consume the matching "
         self.advance()
         self.append_token(
-            TokenType.STRING, self.source[self.start + 1 : self.current - 1]
+            TokenType.STRING, self.source[self.start + 1:self.current - 1]
         )
 
     def parse_number(self):
@@ -144,7 +145,7 @@ class Scanner:
             self.advance()
             while self.peek().isdigit():
                 self.advance()
-        number = float(self.source[self.start : self.current])
+        number = float(self.source[self.start:self.current])
         self.append_token(TokenType.NUMBER, number)
 
     def parse_identifier(self):
@@ -161,7 +162,7 @@ class Scanner:
         while self.peek().isalnum() or self.peek() == "_":
             self.advance()
 
-        lexeme = self.source[self.start : self.current]
+        lexeme = self.source[self.start:self.current]
         token_type = TokenType.IDENTIFIER
         if keywords.get(lexeme) is not None:
             token_type = keywords[lexeme]
