@@ -57,3 +57,17 @@ class ASTFormatter:
         left = expression.left.accept(self)
         right = expression.right.accept(self)
         return f"({lexeme} {left} {right})"
+
+    def visit_grouping_expr(self, expression) -> str:
+        """Visits a binary expression and returns the formatted operator and
+        child expressions.
+
+        Args:
+            expression: expression to visit.
+
+        Returns:
+            A formatted string representing the literal value.
+        """
+        # Format left and right sub-expressions.
+        nested = expression.expr.accept(self)
+        return f"({nested})"
