@@ -1,3 +1,5 @@
 [flake8]
 exclude =
     .venv
+extend-ignore = 
+    E203
