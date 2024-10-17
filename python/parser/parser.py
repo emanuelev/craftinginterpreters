@@ -26,7 +26,7 @@ from scanner.token import Token, TokenType
 @dataclass
 class Parser:
     tokens: List[Token]
-    current: int
+    current: int = 0
 
     def end(self) -> bool:
         """Checks if the input tokens have been consumed,

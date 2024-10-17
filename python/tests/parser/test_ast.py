@@ -3,9 +3,11 @@
 # pylint: disable=missing-function-docstring
 
 from parser import expression as exp
+from parser.parser import Parser
 from parser.astprinter import ASTFormatter
 from scanner.token import Token
 from scanner.token_type import TokenType
+from scanner.scanner import Scanner
 
 
 def test_ast_formatter():  # pylint disable=C0116
@@ -34,4 +36,19 @@ def test_grouping():  # pylint disable=C0116
 
     formatter = ASTFormatter()
     res = formatter.visit(div)
+    assert expected == res
+
+
+def test_parsing():
+    source = "3 * 4 + 2"
+    scanner = Scanner(source)
+    tokens = scanner.scan_tokens()
+
+    parser = Parser(tokens)
+
+    exp = parser.expression()
+
+    formatter = ASTFormatter()
+    res = formatter.visit(exp)
+    expected = "(+ (* 3.0 4.0) 2.0)"  # all numbers are doubles
     assert expected == res
