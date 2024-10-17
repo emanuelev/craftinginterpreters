@@ -1,12 +1,12 @@
 """This module implements pretty printing for expression trees."""
 
+from parser import expression as exp
 
-from parser.expression import ExpressionBase
 
 class ASTFormatter:
     """Visitor class that recursively prints the abstract syntax tree"""
 
-    def visit(self, expr: ExpressionBase):
+    def visit(self, expr: exp.ExpressionBase):
         """Visitor's entry point, invokes expressions' accept on itself.
 
         Args:

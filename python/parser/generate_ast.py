@@ -1,4 +1,5 @@
-"""Util to generate classes for expressions given a textual description of the grammar.
+"""Util to generate classes for expressions given a textual description of the
+grammar.
 
 The generator passes a file in which each line follows the following format:
 
@@ -51,7 +52,7 @@ def generate_ast(grammar: str):
 
     output += "from dataclasses import dataclass\n\n"
     output += "from scanner.token import Token\n\n"
-    output += 'class ExpressionBase: # pylint: disable=too-few-public-methods\n\
+    output += 'class ExpressionBase:\n\
     """Base class for expression classes"""\n\n'
 
     for expression in grammar.splitlines():

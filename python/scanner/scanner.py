@@ -102,7 +102,7 @@ class Scanner:
             literal: object representing the parsed token.
         """
 
-        lexeme = self.source[self.start:self.current]
+        lexeme = self.source[self.start : self.current]
         self.tokens.append(Token(token_type, lexeme, literal, self.line))
 
     def end(self):
@@ -134,7 +134,7 @@ class Scanner:
         # Consume the matching "
         self.advance()
         self.append_token(
-            TokenType.STRING, self.source[self.start + 1:self.current - 1]
+            TokenType.STRING, self.source[self.start + 1 : self.current - 1]
         )
 
     def parse_number(self):
@@ -145,7 +145,7 @@ class Scanner:
             self.advance()
             while self.peek().isdigit():
                 self.advance()
-        number = float(self.source[self.start:self.current])
+        number = float(self.source[self.start : self.current])
         self.append_token(TokenType.NUMBER, number)
 
     def parse_identifier(self):
@@ -162,7 +162,7 @@ class Scanner:
         while self.peek().isalnum() or self.peek() == "_":
             self.advance()
 
-        lexeme = self.source[self.start:self.current]
+        lexeme = self.source[self.start : self.current]
         token_type = TokenType.IDENTIFIER
         if keywords.get(lexeme) is not None:
             token_type = keywords[lexeme]
@@ -210,15 +210,21 @@ class Scanner:
                 )
             case "=":
                 self.append_token(
-                    TokenType.EQUAL_EQUAL if self.match("=") else TokenType.EQUAL
+                    TokenType.EQUAL_EQUAL
+                    if self.match("=")
+                    else TokenType.EQUAL
                 )
             case ">":
                 self.append_token(
-                    TokenType.GREATER_EQUAL if self.match("=") else TokenType.EQUAL
+                    TokenType.GREATER_EQUAL
+                    if self.match("=")
+                    else TokenType.EQUAL
                 )
             case "<":
                 self.append_token(
-                    TokenType.LESS_EQUAL if self.match("=") else TokenType.EQUAL
+                    TokenType.LESS_EQUAL
+                    if self.match("=")
+                    else TokenType.EQUAL
                 )
             case "/":
                 # Slash can be either division or the start of a comment.
@@ -244,4 +250,6 @@ class Scanner:
                 elif c.isalpha():
                     self.parse_identifier()
                 else:
-                    logging.error(f"line {self.line}: Unexpected character {c}")
+                    logging.error(
+                        f"line {self.line}: Unexpected character {c}"
+                    )
