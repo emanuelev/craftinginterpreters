@@ -20,7 +20,7 @@ expected = [
     TokenType.PRINT,
     TokenType.RETURN,
     TokenType.IDENTIFIER,
-    TokenType.EOF
+    TokenType.EOF,
 ]
 
 

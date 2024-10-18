@@ -40,10 +40,9 @@ def test_grouping():  # pylint disable=C0116
 
 
 def test_parsing():
-    source = "3 * 4 + 2"
+    source = "3 * (4 + 2)"
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()
-    print(tokens)
 
     parser = Parser(tokens)
 
@@ -51,5 +50,5 @@ def test_parsing():
 
     formatter = ASTFormatter()
     res = formatter.visit(exp)
-    expected = "(+ (* 3.0 4.0) 2.0)"  # all numbers are doubles
+    expected = "(* 3.0 ((+ 4.0 2.0)))"  # all numbers are doubles
     assert expected == res

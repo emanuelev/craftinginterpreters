@@ -38,6 +38,15 @@ class Parser:
         """Returns the last consumed token."""
         return self.tokens[self.current - 1]
 
+    def peek(self):
+        """Returns the current token without consuming it.
+
+        Returns:
+            The token at the current position.
+        """
+
+        return self.tokens[self.current]
+
     def match(self, expected: List[TokenType]) -> bool:
         """Check if the current token is in the expected list of
         token types.
@@ -52,35 +61,27 @@ class Parser:
             self.current += 1
             return True
         return False
-    
-    def peek(self):
-        """Returns the current token without consuming it.
 
-        Returns:
-            The token at the current position.
-        """
-
-        return self.tokens[self.current]
-
-
-    def consume(self, expected: TokenType) -> str:
+    def consume(self, expected: TokenType, error: str):
         """Consumes the next token if it matches the expected type.
         Throws error otherwise.
-        
+
         Args:
             expected: TokenType
                 The exected token type to match.
+            error: str
+                String to be reported in case of type mismatch.
 
         Raises:
             ValueError: unexpected token type.
         """
 
-        c = self.source[self.current]
-        if expected == c:
+        c = self.tokens[self.current]
+        if expected == c.token_type:
             self.current += 1
             return c
 
-        raise ValueError(f'Line {c.line}: unexecpted token of type {c.token_type}')
+        raise ValueError(f"Line {c.line}: {error}")
 
     def expression(self):
         """Parses an expression rule."""
@@ -199,8 +200,8 @@ class Parser:
         if self.match([TokenType.NUMBER, TokenType.STRING]):
             token = self.previous()
             return exp.LiteralExpr(token.literal)
-        
-        # if self.match([TokenType.LEFT_PAREN]):
-        #     expr = self.expression()
-        #     self.consume(TokenType.RIGHT_BRACE)
-        #     return expr
+
+        if self.match([TokenType.LEFT_PAREN]):
+            expr = self.expression()
+            self.consume(TokenType.RIGHT_PAREN, "Expected ) after expression.")
+            return exp.GroupingExpr(expr)
