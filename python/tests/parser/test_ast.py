@@ -43,6 +43,7 @@ def test_parsing():
     source = "3 * 4 + 2"
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()
+    print(tokens)
 
     parser = Parser(tokens)
 

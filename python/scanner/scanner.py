@@ -60,6 +60,7 @@ class Scanner:
         self.current = self.current + 1
         return c
 
+
     def match(self, expected: str) -> bool:
         """Matches the expected character to the current one and returns true
         and advances current if the match is successful.
@@ -177,6 +178,7 @@ class Scanner:
         while not self.end():
             self.start = self.current
             self.scan_token()
+        self.tokens.append(Token(TokenType.EOF, '', None, self.line))
         return self.tokens
 
     def scan_token(self):

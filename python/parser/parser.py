@@ -32,7 +32,7 @@ class Parser:
         """Checks if the input tokens have been consumed,
         returns true in that case.
         """
-        return self.current >= len(self.tokens)
+        return self.peek().token_type == TokenType.EOF
 
     def previous(self) -> Token:
         """Returns the last consumed token."""
@@ -52,6 +52,35 @@ class Parser:
             self.current += 1
             return True
         return False
+    
+    def peek(self):
+        """Returns the current token without consuming it.
+
+        Returns:
+            The token at the current position.
+        """
+
+        return self.tokens[self.current]
+
+
+    def consume(self, expected: TokenType) -> str:
+        """Consumes the next token if it matches the expected type.
+        Throws error otherwise.
+        
+        Args:
+            expected: TokenType
+                The exected token type to match.
+
+        Raises:
+            ValueError: unexpected token type.
+        """
+
+        c = self.source[self.current]
+        if expected == c:
+            self.current += 1
+            return c
+
+        raise ValueError(f'Line {c.line}: unexecpted token of type {c.token_type}')
 
     def expression(self):
         """Parses an expression rule."""
@@ -170,3 +199,8 @@ class Parser:
         if self.match([TokenType.NUMBER, TokenType.STRING]):
             token = self.previous()
             return exp.LiteralExpr(token.literal)
+        
+        # if self.match([TokenType.LEFT_PAREN]):
+        #     expr = self.expression()
+        #     self.consume(TokenType.RIGHT_BRACE)
+        #     return expr
