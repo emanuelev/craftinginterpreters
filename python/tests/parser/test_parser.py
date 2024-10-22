@@ -27,3 +27,18 @@ def test_parsing_error():
 
     exp = parser.parse()
     assert exp is None
+
+
+def test_comma():
+    source = "3 * (4 + 2), 5 * 7"
+    scanner = Scanner(source)
+    tokens = scanner.scan_tokens()
+
+    parser = Parser(tokens)
+
+    exp = parser.parse()
+
+    formatter = ASTFormatter()
+    res = formatter.visit(exp)
+    expected = "(, (* 3.0 ((+ 4.0 2.0))) (* 5.0 7.0))"
+    assert res == expected

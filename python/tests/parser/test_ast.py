@@ -37,5 +37,3 @@ def test_grouping():  # pylint disable=C0116
     formatter = ASTFormatter()
     res = formatter.visit(div)
     assert expected == res
-
-

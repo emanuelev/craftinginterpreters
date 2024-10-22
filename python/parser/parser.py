@@ -2,7 +2,8 @@
 
 The parsed grammar is in this form:
 
-expression     → equality ;
+expression     → comma
+comma          → equality (, equality)*
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
@@ -93,7 +94,20 @@ class Parser:
 
     def expression(self):
         """Parses an expression rule."""
-        return self.equality()
+        return self.comma()
+
+    def comma(self):
+        """Parses comma rule.
+
+        The production rule is:
+            comma          → equality (, equality)*
+        """
+        expr = self.equality()
+        while self.match([TokenType.COMMA]):
+            operator = self.previous()
+            right = self.equality()
+            expr = exp.BinaryExpr(expr, operator, right)
+        return expr
 
     def equality(self) -> exp.ExpressionBase:
         """Parses an equality rule.
