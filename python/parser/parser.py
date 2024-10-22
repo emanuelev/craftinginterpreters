@@ -17,6 +17,7 @@ compared to the bottom.
 """
 
 from dataclasses import dataclass
+import logging
 from typing import List
 
 from parser import expression as exp
@@ -81,7 +82,7 @@ class Parser:
             self.current += 1
             return c
 
-        raise ValueError(f"Line {c.line}: {error}")
+        self.error(c, error)
 
     def expression(self):
         """Parses an expression rule."""
@@ -174,7 +175,7 @@ class Parser:
             unary          → ( "!" | "-" ) unary | primary ;
         """
 
-        if self.match([TokenType.SLASH, TokenType.STAR]):
+        if self.match([TokenType.BANG, TokenType.MINUS]):
             operator = self.previous()
             right = self.unary()
             expr = exp.UnaryExpr(operator, right)
@@ -205,3 +206,36 @@ class Parser:
             expr = self.expression()
             self.consume(TokenType.RIGHT_PAREN, "Expected ) after expression.")
             return exp.GroupingExpr(expr)
+
+        self.error(self.peek(), "Expected expression")
+
+    def report(self, token: Token, message: str):
+        """Logs a message at a given input token.
+
+        Args:
+            token: Token
+                Token at which the logging event occurred.
+            message: str
+                String representing the message to be logged.
+        """
+        if token.token_type == TokenType.EOF:
+            logging.error(str(token.line) + " at end: " + message)
+        else:
+            logging.error(
+                str(token.line) + " at " + token.lexeme + ": " + message
+            )
+
+    def error(self, token: Token, message: str):
+        """Logs a message at a given input token.
+
+        Args:
+            token: Token
+                Token at which the logging event occurred.
+            message: str
+                String representing the message to be logged.
+        Raises:
+            ValueError: unexpected token type.
+        """
+
+        self.report(token, message)
+        raise ValueError()
