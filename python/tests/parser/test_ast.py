@@ -3,11 +3,9 @@
 # pylint: disable=missing-function-docstring
 
 from parser import expression as exp
-from parser.parser import Parser
 from parser.astprinter import ASTFormatter
 from scanner.token import Token
 from scanner.token_type import TokenType
-from scanner.scanner import Scanner
 
 
 def test_ast_formatter():  # pylint disable=C0116
