@@ -27,7 +27,14 @@ from scanner.token import Token, TokenType
 @dataclass
 class Parser:
     tokens: List[Token]
+
     current: int = 0
+
+    def parse(self):
+        try:
+            return self.expression()
+        except ValueError:
+            return None
 
     def end(self) -> bool:
         """Checks if the input tokens have been consumed,
@@ -208,6 +215,28 @@ class Parser:
             return exp.GroupingExpr(expr)
 
         self.error(self.peek(), "Expected expression")
+
+    def synchronize(self):
+        self.advance()
+
+        while self.end() is False:
+            if self.previous().type == TokenType.SEMICOLON:
+                return
+
+            match self.peek().type:
+                case (
+                    self.CLASS
+                    | self.FUN
+                    | self.VAR
+                    | self.FOR
+                    | self.IF
+                    | self.WHILE
+                    | self.PRINT
+                    | self.RETURN
+                ):
+                    return
+
+            self.advance()
 
     def report(self, token: Token, message: str):
         """Logs a message at a given input token.
