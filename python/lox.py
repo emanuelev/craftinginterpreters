@@ -3,10 +3,11 @@ Python implementation of a jlox interpreter
 """
 
 import argparse
-import sys
 import os
 
-from scanning.scanner import Scanner
+from scanner.scanner import Scanner
+from parser.parser import Parser
+from interpreter.interpreter import Interpreter
 
 
 def parse_args():
@@ -32,14 +33,21 @@ def run(script: str):
     """
     scanner = Scanner(script)
     tokens = scanner.scan_tokens()
-    for t in tokens:
-        print(t)
+    parser = Parser(tokens)
+    expression = parser.parse()
+    interpreter = Interpreter()
+    val = interpreter.evaluate(expression)
+    print(val)
 
 
 def run_prompt():
     """Runs interactive ccommand line prompt"""
-    for line in sys.stdin:
-        run(line)
+    while True:
+        try:
+            line = input("> ")
+            run(line)
+        except EOFError:
+            break
 
 
 def main():

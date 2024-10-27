@@ -26,6 +26,23 @@ class Interpreter:
         """
         return expr.value
 
+    def is_true(self, obj: object) -> bool:
+        """Returns true if the obj is not none or the
+        actual value if obj is of boolean value.
+
+        Args:
+            obj: value to check.
+
+        Returns:
+            obj if type(obj) == True or True if obj is not None.
+        """
+
+        if obj is None:
+            return False
+        if isinstance(obj, bool):
+            return obj
+        return True
+
     def visit_unary_expr(self, expression) -> str:
         """Visits a unary expression and returns the formatted operator and
         child expression.
@@ -38,10 +55,13 @@ class Interpreter:
         """
         # Evaluate the sub-expression first.
         right = self.evaluate(expression.expr)
-
-        # Negate the value obtained from the right subexpr.
-        value = -float(right)
-        return value
+        match expression.token.token_type:
+            case TokenType.MINUS:
+                # Negate the value obtained from the right subexpr.
+                value = -float(right)
+                return value
+            case TokenType.BANG:
+                return self.is_true(right)
 
     def visit_binary_expr(self, expression) -> str:
         """Visits a binary expression and returns the formatted operator and
@@ -61,11 +81,28 @@ class Interpreter:
             case TokenType.MINUS:
                 return float(left) - float(right)
             case TokenType.PLUS:
-                return float(left) + float(right)
+                if isinstance(left, str) or isinstance(right, str):
+                    return str(left) + str(right)
+                else:
+                    return float(left) + float(right)
             case TokenType.STAR:
                 return float(left) * float(right)
             case TokenType.SLASH:
                 return float(left) / float(right)
+            case TokenType.GREATER:
+                return float(left) > float(right)
+            case TokenType.GREATER_EQUAL:
+                return float(left) >= float(right)
+            case TokenType.LESS:
+                return float(left) < float(right)
+            case TokenType.LESS_EQUAL:
+                return float(left) <= float(right)
+            case TokenType.EQUAL:
+                return left == right
+            case TokenType.BANG_EQUAL:
+                return left != right
+            case TokenType.COMMA:
+                return right
 
     def visit_grouping_expr(self, expression) -> str:
         """Visits a binary expression and returns the formatted operator and

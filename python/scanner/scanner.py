@@ -219,13 +219,11 @@ class Scanner:
                 self.append_token(
                     TokenType.GREATER_EQUAL
                     if self.match("=")
-                    else TokenType.EQUAL
+                    else TokenType.GREATER
                 )
             case "<":
                 self.append_token(
-                    TokenType.LESS_EQUAL
-                    if self.match("=")
-                    else TokenType.EQUAL
+                    TokenType.LESS_EQUAL if self.match("=") else TokenType.LESS
                 )
             case "/":
                 # Slash can be either division or the start of a comment.
