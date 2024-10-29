@@ -23,6 +23,7 @@ from typing import List
 
 from parser import expression as exp
 from scanner.token import Token, TokenType
+from utils.exceptions import ParserError
 
 
 @dataclass
@@ -34,7 +35,7 @@ class Parser:
     def parse(self):
         try:
             return self.expression()
-        except ValueError:
+        except ParserError:
             return None
 
     def end(self) -> bool:
@@ -277,8 +278,8 @@ class Parser:
             message: str
                 String representing the message to be logged.
         Raises:
-            ValueError: unexpected token type.
+            ParseError: unexpected token type.
         """
 
         self.report(token, message)
-        raise ValueError()
+        raise ParserError()

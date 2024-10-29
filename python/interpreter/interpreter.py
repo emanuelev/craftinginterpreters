@@ -1,6 +1,10 @@
 """This module implements evaluation of expression trees."""
 
+import logging
+
+from utils.exceptions import RuntimeError
 from parser import expression as exp
+from scanner.token import Token
 from scanner.token_type import TokenType
 
 
@@ -13,7 +17,11 @@ class Interpreter:
         Args:
             expr: expression to visit.
         """
-        return expr.accept(self)
+        try:
+            value = expr.accept(self)
+            return value
+        except RuntimeError:
+            return None
 
     def visit_literal_expr(self, expr) -> str:
         """Visits a literal expression and returns it's value.
@@ -57,6 +65,7 @@ class Interpreter:
         right = self.evaluate(expression.expr)
         match expression.token.token_type:
             case TokenType.MINUS:
+                self.check_operands(expression.token, right)
                 # Negate the value obtained from the right subexpr.
                 value = -float(right)
                 return value
@@ -79,23 +88,31 @@ class Interpreter:
 
         match expression.token.token_type:
             case TokenType.MINUS:
+                self.check_operands(expression.token, left, right)
                 return float(left) - float(right)
             case TokenType.PLUS:
                 if isinstance(left, str) or isinstance(right, str):
                     return str(left) + str(right)
                 else:
+                    self.check_operands(expression.token, left, right)
                     return float(left) + float(right)
             case TokenType.STAR:
+                self.check_operands(expression.token, left, right)
                 return float(left) * float(right)
             case TokenType.SLASH:
+                self.check_operands(expression.token, left, right)
                 return float(left) / float(right)
             case TokenType.GREATER:
+                self.check_operands(expression.token, left, right)
                 return float(left) > float(right)
             case TokenType.GREATER_EQUAL:
+                self.check_operands(expression.token, left, right)
                 return float(left) >= float(right)
             case TokenType.LESS:
+                self.check_operands(expression.token, left, right)
                 return float(left) < float(right)
             case TokenType.LESS_EQUAL:
+                self.check_operands(expression.token, left, right)
                 return float(left) <= float(right)
             case TokenType.EQUAL:
                 return left == right
@@ -116,3 +133,20 @@ class Interpreter:
         """
         # Format left and right sub-expressions.
         return self.evaluate(expression.expr)
+
+    def report(self, token: Token, message: str):
+        """Reports a runtime error for a given operator.
+
+        Args:
+            token: Token
+                Token at which the logging event occurred.
+            message: str
+                String representing the message to be logged.
+        """
+        logging.error(message + f" {token}")
+
+    def check_operands(self, token: Token, *operands: object):
+        for op in operands:
+            if not isinstance(op, float):
+                self.report(token, "Operand(s) must be numbers.")
+                raise RuntimeError()

@@ -47,7 +47,7 @@ def run_prompt():
             line = input("> ")
             run(line)
         except EOFError:
-            break
+            pass
 
 
 def main():
