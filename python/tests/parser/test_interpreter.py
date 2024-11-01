@@ -33,3 +33,19 @@ def test_comparisons():
         interpreter = Interpreter(error_handler)
         assert interpreter.evaluate(exp) == res
 
+def test_comma():
+    error_handler = ErrorHandler()
+    source = "1 < 2, 3 + 4 * 5, (4 - 1) / 3"
+    scanner = Scanner(source)
+    tokens = scanner.scan_tokens()
+
+    parser = Parser(tokens, error_handler)
+    exp = parser.parse()
+
+    interpreter = Interpreter(error_handler)
+    res = interpreter.evaluate(exp)
+    assert not error_handler.errors
+    assert error_handler.runtime_error is None
+    assert res == 1
+
+
