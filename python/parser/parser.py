@@ -23,20 +23,21 @@ from typing import List
 
 from parser import expression as exp
 from scanner.token import Token, TokenType
-from utils.exceptions import ParserError
+from utils.exceptions import ParserError, ErrorHandler
 
 
 @dataclass
 class Parser:
     tokens: List[Token]
+    error_handler: ErrorHandler
 
     current: int = 0
 
     def parse(self):
         try:
             return self.expression()
-        except ParserError:
-            return None
+        except ParserError as e:
+            self.error_handler.errors.append(e)
 
     def end(self) -> bool:
         """Checks if the input tokens have been consumed,
@@ -253,24 +254,10 @@ class Parser:
 
             self.advance()
 
-    def report(self, token: Token, message: str):
-        """Logs a message at a given input token.
-
-        Args:
-            token: Token
-                Token at which the logging event occurred.
-            message: str
-                String representing the message to be logged.
-        """
-        if token.token_type == TokenType.EOF:
-            logging.error(str(token.line) + " at end: " + message)
-        else:
-            logging.error(
-                str(token.line) + " at " + token.lexeme + ": " + message
-            )
 
     def error(self, token: Token, message: str):
-        """Logs a message at a given input token.
+        """Raises an error at the given token with the 
+           provided message.
 
         Args:
             token: Token
@@ -280,6 +267,4 @@ class Parser:
         Raises:
             ParseError: unexpected token type.
         """
-
-        self.report(token, message)
-        raise ParserError()
+        raise ParserError(token, message)

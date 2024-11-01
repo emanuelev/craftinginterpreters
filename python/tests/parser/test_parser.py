@@ -1,6 +1,7 @@
 from parser.parser import Parser
 from parser.astprinter import ASTFormatter
 from scanner.scanner import Scanner
+from utils.exceptions import ErrorHandler
 
 
 def test_math_expression():
@@ -8,7 +9,8 @@ def test_math_expression():
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()
 
-    parser = Parser(tokens)
+    error_handler = ErrorHandler()
+    parser = Parser(tokens, error_handler)
 
     exp = parser.parse()
 
@@ -23,7 +25,8 @@ def test_parsing_error():
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()
 
-    parser = Parser(tokens)
+    error_handler = ErrorHandler()
+    parser = Parser(tokens, error_handler)
 
     exp = parser.parse()
     assert exp is None
@@ -34,7 +37,8 @@ def test_comma():
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()
 
-    parser = Parser(tokens)
+    error_handler = ErrorHandler()
+    parser = Parser(tokens, error_handler)
 
     exp = parser.parse()
 

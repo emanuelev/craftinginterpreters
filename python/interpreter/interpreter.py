@@ -2,14 +2,16 @@
 
 import logging
 
-from utils.exceptions import RuntimeError
+from utils.exceptions import RuntimeError, ErrorHandler
 from parser import expression as exp
 from scanner.token import Token
 from scanner.token_type import TokenType
 
-
 class Interpreter:
     """Visitor class that recursively prints the abstract syntax tree"""
+
+    def __init__(self, error_handler: ErrorHandler):
+        self.error_handler = error_handler
 
     def evaluate(self, expr: exp.ExpressionBase):
         """Visitor's entry point, invokes expressions' accept on itself.
@@ -20,8 +22,8 @@ class Interpreter:
         try:
             value = expr.accept(self)
             return value
-        except RuntimeError:
-            return None
+        except RuntimeError as e:
+            self.error_handler.runtime_error = e
 
     def visit_literal_expr(self, expr) -> str:
         """Visits a literal expression and returns it's value.
@@ -114,7 +116,7 @@ class Interpreter:
             case TokenType.LESS_EQUAL:
                 self.check_operands(expression.token, left, right)
                 return float(left) <= float(right)
-            case TokenType.EQUAL:
+            case TokenType.EQUAL_EQUAL:
                 return left == right
             case TokenType.BANG_EQUAL:
                 return left != right
@@ -134,19 +136,8 @@ class Interpreter:
         # Format left and right sub-expressions.
         return self.evaluate(expression.expr)
 
-    def report(self, token: Token, message: str):
-        """Reports a runtime error for a given operator.
-
-        Args:
-            token: Token
-                Token at which the logging event occurred.
-            message: str
-                String representing the message to be logged.
-        """
-        logging.error(message + f" {token}")
 
     def check_operands(self, token: Token, *operands: object):
         for op in operands:
             if not isinstance(op, float):
-                self.report(token, "Operand(s) must be numbers.")
-                raise RuntimeError()
+                raise RuntimeError(token, "Operand(s) must be numbers.")
