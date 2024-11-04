@@ -254,9 +254,8 @@ class Parser:
 
             self.advance()
 
-
     def error(self, token: Token, message: str):
-        """Raises an error at the given token with the 
+        """Raises an error at the given token with the
            provided message.
 
         Args:

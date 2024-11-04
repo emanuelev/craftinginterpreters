@@ -25,11 +25,11 @@ def parse_args():
 
     return parser.parse_args()
 
+
 class Lox:
     def __init__(self):
         self.error_handler = ErrorHandler()
         self.interpreter = Interpreter(self.error_handler)
-
 
     def run(self, script: str):
         """Runs the input lox script
@@ -52,7 +52,6 @@ class Lox:
             self.error_handler.report_runtime_error()
             exit(76)
         print(val)
-
 
     def run_prompt(self):
         """Runs interactive ccommand line prompt"""

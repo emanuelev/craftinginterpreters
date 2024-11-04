@@ -17,9 +17,10 @@ def test_interpret():
     res = interpreter.evaluate(exp)
     assert res == 18.0
 
+
 def test_comparisons():
     error_handler = ErrorHandler()
-    source = ['1 < 2 == true', '1 < 3 == 2 == 2', 'false == 1 > 2']
+    source = ["1 < 2 == true", "1 < 3 == 2 == 2", "false == 1 > 2"]
     expected = [True, False, True]
     for line, res in zip(source, expected):
         scanner = Scanner(line)
@@ -32,6 +33,7 @@ def test_comparisons():
 
         interpreter = Interpreter(error_handler)
         assert interpreter.evaluate(exp) == res
+
 
 def test_comma():
     error_handler = ErrorHandler()
@@ -47,5 +49,3 @@ def test_comma():
     assert not error_handler.errors
     assert error_handler.runtime_error is None
     assert res == 1
-
-

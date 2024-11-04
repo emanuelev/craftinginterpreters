@@ -7,6 +7,7 @@ from parser import expression as exp
 from scanner.token import Token
 from scanner.token_type import TokenType
 
+
 class Interpreter:
     """Visitor class that recursively prints the abstract syntax tree"""
 
@@ -135,7 +136,6 @@ class Interpreter:
         """
         # Format left and right sub-expressions.
         return self.evaluate(expression.expr)
-
 
     def check_operands(self, token: Token, *operands: object):
         for op in operands:
