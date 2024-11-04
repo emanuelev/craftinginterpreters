@@ -2,44 +2,37 @@
     do not modify manually the content."""
 
 from dataclasses import dataclass
-
-from scanner.token import Token
-
-
 class ExpressionBase:
     pass
 
-
 @dataclass
 class LiteralExpr(ExpressionBase):
-    value: object
+    value: 'object'
 
     def accept(self, visitor):
         return visitor.visit_literal_expr(self)
 
-
 @dataclass
 class UnaryExpr(ExpressionBase):
-    token: Token
-    expr: ExpressionBase
+    token: 'Token'
+    expr: 'ExpressionBase'
 
     def accept(self, visitor):
         return visitor.visit_unary_expr(self)
 
-
 @dataclass
 class BinaryExpr(ExpressionBase):
-    left: ExpressionBase
-    token: Token
-    right: ExpressionBase
+    left: 'ExpressionBase'
+    token: 'Token'
+    right: 'ExpressionBase'
 
     def accept(self, visitor):
         return visitor.visit_binary_expr(self)
 
-
 @dataclass
 class GroupingExpr(ExpressionBase):
-    expr: ExpressionBase
+    expr: 'ExpressionBase'
 
     def accept(self, visitor):
         return visitor.visit_grouping_expr(self)
+
