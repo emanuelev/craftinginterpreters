@@ -7,14 +7,14 @@ class StatementBase:
 
 @dataclass
 class ExpressionStmt(StatementBase):
-    expr: 'ExpressionBase'
+    expr: 'StatementBase'
 
     def accept(self, visitor):
         return visitor.visit_expression_stmt(self)
 
 @dataclass
 class PrintStmt(StatementBase):
-    expr: 'ExpressionBase'
+    expr: 'StatementBase'
 
     def accept(self, visitor):
         return visitor.visit_print_stmt(self)

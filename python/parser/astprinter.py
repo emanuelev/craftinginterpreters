@@ -71,3 +71,28 @@ class ASTFormatter:
         # Format left and right sub-expressions.
         nested = expression.expr.accept(self)
         return f"({nested})"
+        
+    def visit_expression_stmt(self, expression_stmt):
+        """Visits an expression statement and returns it's value.
+
+        Args:
+            expression_stmt: statement expression to visit.
+
+        Returns:
+            The value of the statement.
+        """
+        expr = expression_stmt.expr.accept(self)
+        return f'{expr}' 
+
+    def visit_print_stmt(self, statement):
+        """Visits an expression statement and returns it's value.
+
+        Args:
+            expression_stmt: statement expression to visit.
+
+        Returns:
+            The value of the statement.
+        """
+
+        expr = statement.expr.accept(self)
+        return f'(print {expr})' 

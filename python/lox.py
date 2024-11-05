@@ -40,18 +40,18 @@ class Lox:
         scanner = Scanner(script)
         tokens = scanner.scan_tokens()
         parser = Parser(tokens, self.error_handler)
-        expression = parser.parse()
+        statements = parser.parse()
 
         if self.error_handler.errors:
             self.error_handler.report_errors()
             exit(76)
 
-        val = self.interpreter.evaluate(expression)
+        for stmt in statements:
+            self.interpreter.evaluate(stmt)
 
-        if self.error_handler.runtime_error:
-            self.error_handler.report_runtime_error()
-            exit(76)
-        print(val)
+            if self.error_handler.runtime_error:
+                self.error_handler.report_runtime_error()
+                exit(76)
 
     def run_prompt(self):
         """Runs interactive ccommand line prompt"""

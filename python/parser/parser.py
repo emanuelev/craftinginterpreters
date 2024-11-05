@@ -2,6 +2,13 @@
 
 The parsed grammar is in this form:
 
+program        → statement* EOF
+
+statement      → expressionStmt | printStmt
+expressionStmt → expression ";"
+printStmt      → "print" expression ";"
+
+statement      → expression ";" | print
 expression     → comma
 comma          → equality (, equality)*
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -22,6 +29,7 @@ import logging
 from typing import List
 
 from parser import expression as exp
+from parser import statement as stmt
 from scanner.token import Token, TokenType
 from utils.exceptions import ParserError, ErrorHandler
 
@@ -35,9 +43,12 @@ class Parser:
 
     def parse(self):
         try:
-            return self.expression()
+            statement_list = []
+            while not self.end():
+                statement_list.append(self.statement())
         except ParserError as e:
             self.error_handler.errors.append(e)
+        return statement_list
 
     def end(self) -> bool:
         """Checks if the input tokens have been consumed,
@@ -93,6 +104,17 @@ class Parser:
             return c
 
         self.error(c, error)
+
+    def statement(self):
+        """ Parses statement rule"""
+        if self.match([TokenType.PRINT]):
+            expr = self.expression()
+            statement =  stmt.PrintStmt(expr)
+        else:
+            statement = stmt.ExpressionStmt(self.expression())
+
+        self.consume(TokenType.SEMICOLON, 'Expected ; at the end of statement.')
+        return statement
 
     def expression(self):
         """Parses an expression rule."""

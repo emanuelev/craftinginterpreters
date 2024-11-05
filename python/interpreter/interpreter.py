@@ -4,6 +4,7 @@ import logging
 
 from utils.exceptions import RuntimeError, ErrorHandler
 from parser import expression as exp
+from parser import statement as stmt
 from scanner.token import Token
 from scanner.token_type import TokenType
 
@@ -14,14 +15,14 @@ class Interpreter:
     def __init__(self, error_handler: ErrorHandler):
         self.error_handler = error_handler
 
-    def evaluate(self, expr: exp.ExpressionBase):
+    def evaluate(self, statement: stmt.StatementBase ):
         """Visitor's entry point, invokes expressions' accept on itself.
 
         Args:
             expr: expression to visit.
         """
         try:
-            value = expr.accept(self)
+            value = statement.accept(self)
             return value
         except RuntimeError as e:
             self.error_handler.runtime_error = e
@@ -65,7 +66,7 @@ class Interpreter:
             A formatted string representing the literal value.
         """
         # Evaluate the sub-expression first.
-        right = self.evaluate(expression.expr)
+        right = expression.expr.accept(self)
         match expression.token.token_type:
             case TokenType.MINUS:
                 self.check_operands(expression.token, right)
@@ -86,8 +87,8 @@ class Interpreter:
             A formatted string representing the literal value.
         """
         # Format left and right sub-expressions.
-        left = self.evaluate(expression.left)
-        right = self.evaluate(expression.right)
+        left = expression.left.accept(self)
+        right = expression.right.accept(self)
 
         match expression.token.token_type:
             case TokenType.MINUS:
@@ -135,9 +136,34 @@ class Interpreter:
             A formatted string representing the literal value.
         """
         # Format left and right sub-expressions.
-        return self.evaluate(expression.expr)
+        return expression.expr.accept(self)
 
     def check_operands(self, token: Token, *operands: object):
         for op in operands:
             if not isinstance(op, float):
                 raise RuntimeError(token, "Operand(s) must be numbers.")
+    
+    def visit_expression_stmt(self, expression_stmt):
+        """Visits an expression statement and returns it's value.
+
+        Args:
+            expression_stmt: statement expression to visit.
+
+        Returns:
+            The value of the statement.
+        """
+
+        return expression_stmt.expr.accept(self)
+
+    def visit_print_stmt(self, statement):
+        """Visits an expression statement and returns it's value.
+
+        Args:
+            expression_stmt: statement expression to visit.
+
+        Returns:
+            The value of the statement.
+        """
+
+        print(statement.expr.accept(self))
+
