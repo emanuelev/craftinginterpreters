@@ -54,5 +54,5 @@ class ErrorHandler:
     def report_runtime_error(self):
         """Reports a runtime error for a given operator."""
         logging.error(
-            self.runtime_error.message + f" {self.runtime_error.token}"
+            f"Line {self.runtime_error.token.line}: {self.runtime_error.message} {self.runtime_error.token}"
         )

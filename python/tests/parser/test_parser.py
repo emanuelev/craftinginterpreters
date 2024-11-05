@@ -49,6 +49,7 @@ def test_comma():
     expected = "(, (* 3.0 ((+ 4.0 2.0))) (* 5.0 7.0))"
     assert res == expected
 
+
 def test_print_expression():
     source = "print 4 + 2;"
     scanner = Scanner(source)

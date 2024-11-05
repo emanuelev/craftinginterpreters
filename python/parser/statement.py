@@ -2,20 +2,23 @@
     do not modify manually the content."""
 
 from dataclasses import dataclass
+
+
 class StatementBase:
     pass
 
+
 @dataclass
 class ExpressionStmt(StatementBase):
-    expr: 'StatementBase'
+    expr: "StatementBase"
 
     def accept(self, visitor):
         return visitor.visit_expression_stmt(self)
 
+
 @dataclass
 class PrintStmt(StatementBase):
-    expr: 'StatementBase'
+    expr: "StatementBase"
 
     def accept(self, visitor):
         return visitor.visit_print_stmt(self)
-

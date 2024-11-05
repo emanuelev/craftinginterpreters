@@ -1,6 +1,7 @@
 """This module implements evaluation of expression trees."""
 
 import logging
+from typing import List
 
 from utils.exceptions import RuntimeError, ErrorHandler
 from parser import expression as exp
@@ -15,7 +16,19 @@ class Interpreter:
     def __init__(self, error_handler: ErrorHandler):
         self.error_handler = error_handler
 
-    def evaluate(self, statement: stmt.StatementBase ):
+    def interpret(self, statements: List[stmt.StatementBase]):
+        """Interpreter entry point, evaluates a list of statements.
+
+        Args:
+            statements: list of statements to interpret.
+        """
+        try:
+            for statement in statements:
+                statement.accept(self)
+        except RuntimeError as e:
+            self.error_handler.runtime_error = e
+
+    def evaluate(self, statement: stmt.StatementBase):
         """Visitor's entry point, invokes expressions' accept on itself.
 
         Args:
@@ -142,7 +155,7 @@ class Interpreter:
         for op in operands:
             if not isinstance(op, float):
                 raise RuntimeError(token, "Operand(s) must be numbers.")
-    
+
     def visit_expression_stmt(self, expression_stmt):
         """Visits an expression statement and returns it's value.
 
@@ -166,4 +179,3 @@ class Interpreter:
         """
 
         print(statement.expr.accept(self))
-

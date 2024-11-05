@@ -46,12 +46,11 @@ class Lox:
             self.error_handler.report_errors()
             exit(76)
 
-        for stmt in statements:
-            self.interpreter.evaluate(stmt)
+        self.interpreter.interpret(statements)
 
-            if self.error_handler.runtime_error:
-                self.error_handler.report_runtime_error()
-                exit(76)
+        if self.error_handler.runtime_error:
+            self.error_handler.report_runtime_error()
+            exit(76)
 
     def run_prompt(self):
         """Runs interactive ccommand line prompt"""

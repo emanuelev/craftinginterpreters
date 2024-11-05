@@ -106,14 +106,16 @@ class Parser:
         self.error(c, error)
 
     def statement(self):
-        """ Parses statement rule"""
+        """Parses statement rule"""
         if self.match([TokenType.PRINT]):
             expr = self.expression()
-            statement =  stmt.PrintStmt(expr)
+            statement = stmt.PrintStmt(expr)
         else:
             statement = stmt.ExpressionStmt(self.expression())
 
-        self.consume(TokenType.SEMICOLON, 'Expected ; at the end of statement.')
+        self.consume(
+            TokenType.SEMICOLON, "Expected ; at the end of statement."
+        )
         return statement
 
     def expression(self):

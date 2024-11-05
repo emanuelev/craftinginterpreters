@@ -50,6 +50,7 @@ def test_comma():
     assert not error_handler.errors
     assert error_handler.runtime_error is None
 
+
 def test_print():
     error_handler = ErrorHandler()
     source = 'print "hello" + " world";'
@@ -64,4 +65,3 @@ def test_print():
         for s in stmts:
             interpreter.evaluate(s)
     assert "hello world\n" == f.getvalue()
-
