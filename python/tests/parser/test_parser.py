@@ -65,3 +65,28 @@ def test_print_expression():
     res = formatter.visit(stmt[0])
     expected = "(print (+ 4.0 2.0))"  # all numbers are doubles
     assert expected == res
+
+
+def test_variables():
+    source = 'var x; var y = 2.0; var z = "ciao";'
+    scanner = Scanner(source)
+    tokens = scanner.scan_tokens()
+
+    error_handler = ErrorHandler()
+    parser = Parser(tokens, error_handler)
+
+    formatter = ASTFormatter()
+
+    statements = parser.parse()
+    error_handler.report_errors()
+    assert len(statements) == 3
+
+    assert statements[0].name.lexeme == "x"
+    assert (
+        statements[1].name.lexeme == "y"
+        and statements[1].initialiser.accept(formatter) == "2.0"
+    )
+    assert (
+        statements[2].name.lexeme == "z"
+        and statements[2].initialiser.accept(formatter) == "ciao"
+    )

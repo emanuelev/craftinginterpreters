@@ -10,7 +10,7 @@ class StatementBase:
 
 @dataclass
 class ExpressionStmt(StatementBase):
-    expr: "StatementBase"
+    expr: "ExpressionBase"
 
     def accept(self, visitor):
         return visitor.visit_expression_stmt(self)
@@ -18,7 +18,16 @@ class ExpressionStmt(StatementBase):
 
 @dataclass
 class PrintStmt(StatementBase):
-    expr: "StatementBase"
+    expr: "ExpressionBase"
 
     def accept(self, visitor):
         return visitor.visit_print_stmt(self)
+
+
+@dataclass
+class VarStmt(StatementBase):
+    name: "Token"
+    initialiser: "ExpressionBase"
+
+    def accept(self, visitor):
+        return visitor.visit_var_stmt(self)

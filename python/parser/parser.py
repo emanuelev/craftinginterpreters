@@ -2,7 +2,12 @@
 
 The parsed grammar is in this form:
 
-program        → statement* EOF
+program        → declaration* EOF ;
+
+declaration    → varDecl
+               | statement ;
+
+varDecl        -> "var" IDENTIFIER ("=" expression)? ";"
 
 statement      → expressionStmt | printStmt
 expressionStmt → expression ";"
@@ -18,7 +23,7 @@ factor         → unary ( ( "/" | "*" ) unary )* ;
 unary          → ( "!" | "-" ) unary
                | primary ;
 primary        → NUMBER | STRING | "true" | "false" | "nil"
-               | "(" expression ")" ;
+               | "(" expression ")"  | IDENTIFIER;
 
 Notice that the production at the top have lower precedence in the evaluation
 compared to the bottom.
@@ -42,12 +47,11 @@ class Parser:
     current: int = 0
 
     def parse(self):
-        try:
-            statement_list = []
-            while not self.end():
-                statement_list.append(self.statement())
-        except ParserError as e:
-            self.error_handler.errors.append(e)
+        statement_list = []
+        while not self.end():
+            decl = self.declaration()
+            if decl is not None:
+                statement_list.append(decl)
         return statement_list
 
     def end(self) -> bool:
@@ -105,6 +109,21 @@ class Parser:
 
         self.error(c, error)
 
+    def advance(self):
+        """Advances the current token."""
+        if not self.end():
+            self.current += 1
+
+    def declaration(self):
+        try:
+            if self.match([TokenType.VAR]):
+                return self.varDecl()
+            return self.statement()
+        except ParserError as e:
+            self.error_handler.errors.append(e)
+            self.synchronize()
+        return None
+
     def statement(self):
         """Parses statement rule"""
         if self.match([TokenType.PRINT]):
@@ -117,6 +136,18 @@ class Parser:
             TokenType.SEMICOLON, "Expected ; at the end of statement."
         )
         return statement
+
+    def varDecl(self):
+        name = self.consume(TokenType.IDENTIFIER, "Expected variable name.")
+
+        expr = None
+        if self.match([TokenType.EQUAL]):
+            expr = self.expression()
+        self.consume(
+            TokenType.SEMICOLON,
+            "Expected semicolon at the end of declaration.",
+        )
+        return stmt.VarStmt(name, expr)
 
     def expression(self):
         """Parses an expression rule."""
@@ -254,26 +285,31 @@ class Parser:
             self.consume(TokenType.RIGHT_PAREN, "Expected ) after expression.")
             return exp.GroupingExpr(expr)
 
+        if self.match([TokenType.IDENTIFIER]):
+            token = self.previous()
+            return exp.VariableExpr(token)
+
         self.error(self.peek(), "Expected expression")
 
     def synchronize(self):
         self.advance()
 
         while self.end() is False:
-            if self.previous().type == TokenType.SEMICOLON:
+            if self.previous().token_type == TokenType.SEMICOLON:
                 return
 
-            match self.peek().type:
+            match self.peek().token_type:
                 case (
-                    self.CLASS
-                    | self.FUN
-                    | self.VAR
-                    | self.FOR
-                    | self.IF
-                    | self.WHILE
-                    | self.PRINT
-                    | self.RETURN
+                    TokenType.CLASS
+                    | TokenType.FUN
+                    | TokenType.VAR
+                    | TokenType.FOR
+                    | TokenType.IF
+                    | TokenType.WHILE
+                    | TokenType.PRINT
+                    | TokenType.RETURN
                 ):
+                    print(f"Found synch token {self.peek()}")
                     return
 
             self.advance()

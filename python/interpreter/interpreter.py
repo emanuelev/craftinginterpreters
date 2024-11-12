@@ -179,3 +179,19 @@ class Interpreter:
         """
 
         print(statement.expr.accept(self))
+
+    def visit_var_stmt(self, statement):
+        """Visits var statement and returns it's value.
+
+        Args:
+            statement: statement expression to visit.
+
+        Returns:
+            The value of the statement.
+        """
+        val = None
+        if statement.initialiser is not None:
+            val = statement.initialiser.accept(self)
+        print(
+            f"visited a var with name {statement.name.lexeme} and value {val}"
+        )

@@ -41,3 +41,11 @@ class GroupingExpr(ExpressionBase):
 
     def accept(self, visitor):
         return visitor.visit_grouping_expr(self)
+
+
+@dataclass
+class VariableExpr(ExpressionBase):
+    name: "Token"
+
+    def accept(self, visitor):
+        return visitor.visit_variable_expr(self)
