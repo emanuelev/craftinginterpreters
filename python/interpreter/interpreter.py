@@ -3,11 +3,12 @@
 import logging
 from typing import List
 
-from utils.exceptions import RuntimeError, ErrorHandler
+from interpreter.environment import Environment
 from parser import expression as exp
 from parser import statement as stmt
 from scanner.token import Token
 from scanner.token_type import TokenType
+from utils.exceptions import RuntimeError, ErrorHandler
 
 
 class Interpreter:
@@ -15,6 +16,7 @@ class Interpreter:
 
     def __init__(self, error_handler: ErrorHandler):
         self.error_handler = error_handler
+        self.environment = Environment()
 
     def interpret(self, statements: List[stmt.StatementBase]):
         """Interpreter entry point, evaluates a list of statements.
@@ -151,6 +153,17 @@ class Interpreter:
         # Format left and right sub-expressions.
         return expression.expr.accept(self)
 
+    def visit_variable_expr(self, expression) -> str:
+        """Visits a variable expression and returns it's value.
+
+        Args:
+            expression: variable expression to visit.
+
+        Returns:
+            A formatted string representing the literal value.
+        """
+        return self.environment.get(expression.name)
+
     def check_operands(self, token: Token, *operands: object):
         for op in operands:
             if not isinstance(op, float):
@@ -185,13 +198,8 @@ class Interpreter:
 
         Args:
             statement: statement expression to visit.
-
-        Returns:
-            The value of the statement.
         """
         val = None
         if statement.initialiser is not None:
             val = statement.initialiser.accept(self)
-        print(
-            f"visited a var with name {statement.name.lexeme} and value {val}"
-        )
+        self.environment.define(statement.name.lexeme, val)
