@@ -203,3 +203,15 @@ class Interpreter:
         if statement.initialiser is not None:
             val = statement.initialiser.accept(self)
         self.environment.define(statement.name.lexeme, val)
+
+    def visit_assignment_expr(self, expression) -> str:
+        """Visits a variable expression and returns it's value.
+
+        Args:
+            expression: variable expression to visit.
+
+        Returns:
+            A formatted string representing the literal value.
+        """
+        val = expression.value.accept(self)
+        self.environment.set(expression.name, val)

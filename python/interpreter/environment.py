@@ -22,7 +22,7 @@ class Environment:
 
     def get(self, name: Token):
         """Retrieves the value of the input variable. Raises
-        ValueError if the variablkke has not been defined.
+        ValueError if the variable has not been defined.
 
         Args:
             name: Token representing the variable.
@@ -30,5 +30,19 @@ class Environment:
 
         if name.lexeme in self.values:
             return self.values[name.lexeme]
+
+        raise RuntimeError(name, f"Undefined variable {name.lexeme}.")
+
+    def set(self, name: Token, value: object):
+        """Sets the value of the input variable. Raises
+        ValueError if the variable has not been defined.
+
+        Args:
+            name: Token representing the variable.
+        """
+
+        if name.lexeme in self.values:
+            self.values[name.lexeme] = value
+            return
 
         raise RuntimeError(name, f"Undefined variable {name.lexeme}.")

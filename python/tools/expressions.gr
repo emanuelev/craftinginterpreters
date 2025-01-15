@@ -2,5 +2,6 @@ ExpressionBase Expr
 Literal value object
 Unary token Token expr ExpressionBase
 Binary left ExpressionBase token Token right ExpressionBase
+Assignment name Token value ExpressionBase 
 Grouping expr ExpressionBase
 Variable name Token

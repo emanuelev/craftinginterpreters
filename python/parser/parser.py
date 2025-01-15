@@ -14,8 +14,9 @@ expressionStmt → expression ";"
 printStmt      → "print" expression ";"
 
 statement      → expression ";" | print
-expression     → comma
-comma          → equality (, equality)*
+expression     → assignment; 
+assignment     → IDENTIFIER "=" assignment | comma;
+comma          → equality (, equality)*;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
@@ -151,7 +152,19 @@ class Parser:
 
     def expression(self):
         """Parses an expression rule."""
-        return self.comma()
+        return self.assignment()
+
+    def assignment(self):
+        """Parses an assignment rule."""
+        expr = self.comma()
+        if self.match([TokenType.EQUAL]):
+            equals = self.previous()
+            value = self.assignment()
+            if isinstance(expr, exp.VariableExpr):
+                return exp.AssignmentExpr(expr.name, value)
+            else:
+                self.error(equals, "Invalid assigntment target.")
+        return expr
 
     def comma(self):
         """Parses comma rule.

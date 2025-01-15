@@ -36,6 +36,15 @@ class BinaryExpr(ExpressionBase):
 
 
 @dataclass
+class AssignmentExpr(ExpressionBase):
+    name: "Token"
+    value: "ExpressionBase"
+
+    def accept(self, visitor):
+        return visitor.visit_assignment_expr(self)
+
+
+@dataclass
 class GroupingExpr(ExpressionBase):
     expr: "ExpressionBase"
 
