@@ -156,6 +156,19 @@ class Parser:
 
     def assignment(self):
         """Parses an assignment rule."""
+
+        # With a one character lookahead parser we can't decide whether 
+        # the next statement is an assignment or not. Example:
+        # > print x;
+        # x is an identifier, but in this case is NOT part of an assignment.
+        # How to disambiguate between these two cases?
+        # > print x;
+        # > x = 2.0;
+        # Hack: treat the left handside as a normal expression. If its evaluation
+        # is followed by an equal token, expect it's type to have been resolved
+        # to an IDENTIFIER expression. This allow us to cover way more complex
+        # assignments, for instance:
+        # > Foo(2.0, 3.0).y = 4.0;
         expr = self.comma()
         if self.match([TokenType.EQUAL]):
             equals = self.previous()
