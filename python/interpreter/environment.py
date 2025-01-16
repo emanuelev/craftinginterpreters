@@ -5,8 +5,9 @@ from utils.exceptions import RuntimeError
 
 
 class Environment:
-    def __init__(self):
+    def __init__(self, enclosing=None):
         self.values = {}
+        self.enclosing = enclosing
 
     def define(self, name: str, value: object):
         """Defines a new variable. If the variable
@@ -31,6 +32,9 @@ class Environment:
         if name.lexeme in self.values:
             return self.values[name.lexeme]
 
+        if self.enclosing is not None:
+            return self.enclosing.get(name)
+
         raise RuntimeError(name, f"Undefined variable {name.lexeme}.")
 
     def set(self, name: Token, value: object):
@@ -44,5 +48,8 @@ class Environment:
         if name.lexeme in self.values:
             self.values[name.lexeme] = value
             return
+
+        if self.enclosing is not None:
+            return self.enclosing.set(name, value)
 
         raise RuntimeError(name, f"Undefined variable {name.lexeme}.")

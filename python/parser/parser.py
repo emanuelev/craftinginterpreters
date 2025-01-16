@@ -9,9 +9,10 @@ declaration    → varDecl
 
 varDecl        -> "var" IDENTIFIER ("=" expression)? ";"
 
-statement      → expressionStmt | printStmt
+statement      → expressionStmt | printStmt | blockStmt
 expressionStmt → expression ";"
 printStmt      → "print" expression ";"
+blockStmt      → "{" declaration "}"
 
 statement      → expression ";" | print
 expression     → assignment; 
@@ -130,6 +131,9 @@ class Parser:
         if self.match([TokenType.PRINT]):
             expr = self.expression()
             statement = stmt.PrintStmt(expr)
+        elif self.match([TokenType.LEFT_BRACE]):
+            statement = stmt.BlockStmt(self.block())
+            return statement
         else:
             statement = stmt.ExpressionStmt(self.expression())
 
@@ -150,6 +154,15 @@ class Parser:
         )
         return stmt.VarStmt(name, expr)
 
+    def block(self):
+        statements = []
+        while (
+            self.peek().token_type != TokenType.RIGHT_BRACE and not self.end()
+        ):
+            statements.append(self.declaration())
+        self.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
+        return statements
+
     def expression(self):
         """Parses an expression rule."""
         return self.assignment()
@@ -157,18 +170,21 @@ class Parser:
     def assignment(self):
         """Parses an assignment rule."""
 
-        # With a one character lookahead parser we can't decide whether 
-        # the next statement is an assignment or not. Example:
+        # With a one character lookahead parser we can't decide whether the next
+        # statement is an assignment or not. Example:
         # > print x;
         # x is an identifier, but in this case is NOT part of an assignment.
         # How to disambiguate between these two cases?
         # > print x;
         # > x = 2.0;
-        # Hack: treat the left handside as a normal expression. If its evaluation
-        # is followed by an equal token, expect it's type to have been resolved
-        # to an IDENTIFIER expression. This allow us to cover way more complex
-        # assignments, for instance:
+        # Hack: treat the left handside as a normal expression. If its
+        # evaluation is followed by an equal token, expect it's type to have
+        # been resolved to an IDENTIFIER expression. This allow us to cover way
+        # more complex assignments, for instance:
         # > Foo(2.0, 3.0).y = 4.0;
+        # but it will correctly throw an error for when an r-value is used as
+        # l-value:
+        # > a + b = c;
         expr = self.comma()
         if self.match([TokenType.EQUAL]):
             equals = self.previous()

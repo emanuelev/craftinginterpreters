@@ -31,3 +31,11 @@ class VarStmt(StatementBase):
 
     def accept(self, visitor):
         return visitor.visit_var_stmt(self)
+
+
+@dataclass
+class BlockStmt(StatementBase):
+    statements: "List[StatementBase]"
+
+    def accept(self, visitor):
+        return visitor.visit_block_stmt(self)

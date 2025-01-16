@@ -215,3 +215,15 @@ class Interpreter:
         """
         val = expression.value.accept(self)
         self.environment.set(expression.name, val)
+        return val
+
+    def visit_block_stmt(self, statement_list) -> str:
+        """Visits a variable expression and returns it's value.
+
+        Args:
+            statement_list: list of statements to execute.
+
+        Returns:
+            A formatted string representing the literal value.
+        """
+        pass
