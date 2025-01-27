@@ -5,6 +5,7 @@ in the lox interpreter.
 
 from dataclasses import dataclass
 import logging
+import sys
 from typing import List
 
 from scanner.token_type import TokenType
@@ -41,18 +42,15 @@ class ErrorHandler:
     def report_errors(self):
         for e in self.errors:
             if e.token.token_type == TokenType.EOF:
-                logging.error(str(e.token.line) + " at end: " + e.message)
+                print(f'[line {str(e.token.line)}] Error at end: {e.message}', file=sys.stderr)
             else:
-                logging.error(
-                    str(e.token.line)
-                    + " at "
-                    + e.token.lexeme
-                    + ": "
-                    + e.message
+                print(
+                    f'[line {str(e.token.line)}] Error at \'{e.token.lexeme}\': {e.message}',
+                    file=sys.stderr
                 )
 
     def report_runtime_error(self):
         """Reports a runtime error for a given operator."""
-        logging.error(
-            f"Line {self.runtime_error.token.line}: {self.runtime_error.message} {self.runtime_error.token}"
+        print(
+            f"[{self.runtime_error.token.line}] Error at {self.runtime_error.message} {self.runtime_error.token}", file=sys.stderr
         )

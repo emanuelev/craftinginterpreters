@@ -143,7 +143,7 @@ class Parser:
         return statement
 
     def varDecl(self):
-        name = self.consume(TokenType.IDENTIFIER, "Expected variable name.")
+        name = self.consume(TokenType.IDENTIFIER, "Expect variable name.")
 
         expr = None
         if self.match([TokenType.EQUAL]):

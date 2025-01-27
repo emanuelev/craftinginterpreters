@@ -4,6 +4,7 @@ Python implementation of a jlox interpreter
 
 import argparse
 import os
+from sys import exit
 
 from interpreter.interpreter import Interpreter
 from parser.parser import Parser
@@ -44,13 +45,13 @@ class Lox:
 
         if self.error_handler.errors:
             self.error_handler.report_errors()
-            exit(76)
+            exit(65)
 
         self.interpreter.interpret(statements)
 
         if self.error_handler.runtime_error:
             self.error_handler.report_runtime_error()
-            exit(76)
+            exit(70)
 
     def run_prompt(self):
         """Runs interactive ccommand line prompt"""
