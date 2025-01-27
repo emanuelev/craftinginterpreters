@@ -9,6 +9,7 @@ from parser import statement as stmt
 from scanner.token import Token
 from scanner.token_type import TokenType
 from utils.exceptions import RuntimeError, ErrorHandler
+from utils.print import pretty_print
 
 
 class Interpreter:
@@ -191,7 +192,7 @@ class Interpreter:
             The value of the statement.
         """
 
-        print(statement.expr.accept(self))
+        pretty_print(statement.expr.accept(self))
 
     def visit_var_stmt(self, statement):
         """Visits var statement and returns it's value.
