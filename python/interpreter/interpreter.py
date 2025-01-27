@@ -226,4 +226,15 @@ class Interpreter:
         Returns:
             A formatted string representing the literal value.
         """
-        pass
+
+        parent_env = self.environment  # cache the current env.
+
+        try:
+            self.environment = Environment(parent_env)
+            for s in statement_list.statements:
+                self.evaluate(s)
+            self.environment = parent_env
+        except RuntimeError as e:
+            # Restore parent env and rethrow exception.
+            self.environment = parent_env
+            raise e
