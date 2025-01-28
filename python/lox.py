@@ -38,7 +38,7 @@ class Lox:
         Args:
             script: input lox script to be run.
         """
-        scanner = Scanner(script)
+        scanner = Scanner(script, self.error_handler)
         tokens = scanner.scan_tokens()
         parser = Parser(tokens, self.error_handler)
         statements = parser.parse()

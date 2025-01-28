@@ -13,6 +13,11 @@ from scanner.token import Token
 
 
 @dataclass
+class ScannerError(Exception):
+    line: int
+    message: str
+
+@dataclass
 class ParserError(Exception):
     token: Token
     message: str
@@ -41,7 +46,9 @@ class ErrorHandler:
 
     def report_errors(self):
         for e in self.errors:
-            if e.token.token_type == TokenType.EOF:
+            if isinstance(e, ScannerError):
+                print(f'[line {str(e.line)}] Error: {e.message}', file=sys.stderr)
+            elif e.token.token_type == TokenType.EOF:
                 print(f'[line {str(e.token.line)}] Error at end: {e.message}', file=sys.stderr)
             else:
                 print(

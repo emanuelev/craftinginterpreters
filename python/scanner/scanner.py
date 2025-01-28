@@ -6,6 +6,7 @@ from typing import List
 
 from scanner.token import Token
 from scanner.token_type import TokenType
+from utils.exceptions import ScannerError
 
 keywords = {
     "and": TokenType.AND,
@@ -43,8 +44,9 @@ class Scanner:
             Number of the current line in the source code.
     """
 
-    def __init__(self, source):
+    def __init__(self, source, error_handler):
         self.source = source
+        self.error_handler = error_handler
         self.tokens = []
         self.start = 0
         self.current = 0
@@ -128,7 +130,8 @@ class Scanner:
             self.advance()
 
         if self.end():
-            logging.error("Unterminated string.")
+            e = ScannerError(self.line, "Unterminated string.")
+            self.error_handler.errors.append(e)
             return
 
         # Consume the matching "
