@@ -103,8 +103,9 @@ class Interpreter:
         right = expression.expr.accept(self)
         match expression.token.token_type:
             case TokenType.MINUS:
-                self.check_operands(expression.token, right)
-                # Negate the value obtained from the right subexpr.
+                if not isinstance(right, float):
+                    raise RuntimeError(expression.token, 
+                                    "Operand must be a number.")
                 value = -float(right)
                 return value
             case TokenType.BANG:
@@ -129,11 +130,13 @@ class Interpreter:
                 self.check_operands(expression.token, left, right)
                 return float(left) - float(right)
             case TokenType.PLUS:
-                if isinstance(left, str) or isinstance(right, str):
+                if isinstance(left, str) and isinstance(right, str):
                     return str(left) + str(right)
-                else:
-                    self.check_operands(expression.token, left, right)
+                elif isinstance(left, float) and isinstance(right, float):
                     return float(left) + float(right)
+                raise RuntimeError(expression.token, 
+                                   "Operands must be two numbers or two strings.")
+                
             case TokenType.STAR:
                 self.check_operands(expression.token, left, right)
                 return float(left) * float(right)
@@ -186,7 +189,7 @@ class Interpreter:
     def check_operands(self, token: Token, *operands: object):
         for op in operands:
             if not isinstance(op, float):
-                raise RuntimeError(token, "Operand(s) must be numbers.")
+                raise RuntimeError(token, "Operands must be numbers.")
 
 
     def visit_expression_stmt(self, expression_stmt):
