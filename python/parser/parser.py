@@ -138,7 +138,7 @@ class Parser:
             statement = stmt.ExpressionStmt(self.expression())
 
         self.consume(
-            TokenType.SEMICOLON, "Expected ; at the end of statement."
+            TokenType.SEMICOLON, "Expect ; at the end of statement."
         )
         return statement
 
@@ -150,7 +150,7 @@ class Parser:
             expr = self.expression()
         self.consume(
             TokenType.SEMICOLON,
-            "Expected semicolon at the end of declaration.",
+            "Expect semicolon at the end of declaration.",
         )
         return stmt.VarStmt(name, expr)
 
@@ -192,7 +192,7 @@ class Parser:
             if isinstance(expr, exp.VariableExpr):
                 return exp.AssignmentExpr(expr.name, value)
             else:
-                self.error(equals, "Invalid assigntment target.")
+                self.error(equals, "Invalid assignment target.")
         return expr
 
     def comma(self):
@@ -324,14 +324,14 @@ class Parser:
 
         if self.match([TokenType.LEFT_PAREN]):
             expr = self.expression()
-            self.consume(TokenType.RIGHT_PAREN, "Expected ) after expression.")
+            self.consume(TokenType.RIGHT_PAREN, "Expect ) after expression.")
             return exp.GroupingExpr(expr)
 
         if self.match([TokenType.IDENTIFIER]):
             token = self.previous()
             return exp.VariableExpr(token)
 
-        self.error(self.peek(), "Expected expression")
+        self.error(self.peek(), "Expect expression.")
 
     def synchronize(self):
         self.advance()

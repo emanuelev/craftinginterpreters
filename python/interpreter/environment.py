@@ -35,7 +35,7 @@ class Environment:
         if self.enclosing is not None:
             return self.enclosing.get(name)
 
-        raise RuntimeError(name, f"Undefined variable {name.lexeme}.")
+        raise RuntimeError(name, f"Undefined variable '{name.lexeme}'.")
 
     def set(self, name: Token, value: object):
         """Sets the value of the input variable. Raises
@@ -52,4 +52,4 @@ class Environment:
         if self.enclosing is not None:
             return self.enclosing.set(name, value)
 
-        raise RuntimeError(name, f"Undefined variable {name.lexeme}.")
+        raise RuntimeError(name, f"Undefined variable '{name.lexeme}'.")

@@ -52,5 +52,8 @@ class ErrorHandler:
     def report_runtime_error(self):
         """Reports a runtime error for a given operator."""
         print(
-            f"[{self.runtime_error.token.line}] Error at {self.runtime_error.message} {self.runtime_error.token}", file=sys.stderr
+            f"{self.runtime_error.message}", file=sys.stderr
+        )
+        print(
+            f"[line {self.runtime_error.token.line}] in script", file=sys.stderr
         )

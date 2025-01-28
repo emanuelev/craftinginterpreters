@@ -71,6 +71,24 @@ class Interpreter:
             return obj
         return True
 
+    def is_equal(self, lhs: object, rhs: object) -> bool:
+        """ Compares two objects for equality. If both are None,
+        it returns True, False if only one of the two is None. 
+
+        Args:
+            lhs: left hand-side of the comparison.
+            rhs: right hand-side of the comparison.
+
+        Returns:
+            bool representing the result of the equality comparison.
+        """
+        if lhs is None and rhs is None:
+            return True
+        if lhs is None:
+            return False
+
+        return lhs == rhs and type(lhs) == type(rhs)
+
     def visit_unary_expr(self, expression) -> str:
         """Visits a unary expression and returns the formatted operator and
         child expression.
@@ -90,7 +108,7 @@ class Interpreter:
                 value = -float(right)
                 return value
             case TokenType.BANG:
-                return self.is_true(right)
+                return not self.is_true(right)
 
     def visit_binary_expr(self, expression) -> str:
         """Visits a binary expression and returns the formatted operator and
@@ -135,9 +153,9 @@ class Interpreter:
                 self.check_operands(expression.token, left, right)
                 return float(left) <= float(right)
             case TokenType.EQUAL_EQUAL:
-                return left == right
+                return self.is_equal(left, right)
             case TokenType.BANG_EQUAL:
-                return left != right
+                return not self.is_equal(left, right)
             case TokenType.COMMA:
                 return right
 
@@ -169,6 +187,7 @@ class Interpreter:
         for op in operands:
             if not isinstance(op, float):
                 raise RuntimeError(token, "Operand(s) must be numbers.")
+
 
     def visit_expression_stmt(self, expression_stmt):
         """Visits an expression statement and returns it's value.
