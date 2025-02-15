@@ -261,3 +261,20 @@ class Interpreter:
             # Restore parent env and rethrow exception.
             self.environment = parent_env
             raise e
+
+    def visit_if_stmt(self, ifStmt) -> str:
+        """Visits if-else statement. If condition is 
+
+        Args:
+            ifStmt: if statement to be evaluated
+
+        Returns:
+        """
+
+        if self.is_true(self.evaluate(ifStmt.condition)):
+            return self.evaluate(ifStmt.thenBranch)
+        elif ifStmt.elseBranch is not None:
+            return self.evaluate(ifStmt.elseBranch)
+        
+
+        

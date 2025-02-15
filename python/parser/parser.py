@@ -9,7 +9,8 @@ declaration    → varDecl
 
 varDecl        -> "var" IDENTIFIER ("=" expression)? ";"
 
-statement      → expressionStmt | printStmt | blockStmt
+statement      → expressionStmt | printStmt | blockStmt | ifStmt
+ifStmt         → "if (" expression ")" statement ("else" statement)?
 expressionStmt → expression ";"
 printStmt      → "print" expression ";"
 blockStmt      → "{" declaration "}"
@@ -128,7 +129,9 @@ class Parser:
 
     def statement(self):
         """Parses statement rule"""
-        if self.match([TokenType.PRINT]):
+        if self.match([TokenType.IF]):
+            return self.ifStatement()
+        elif self.match([TokenType.PRINT]):
             expr = self.expression()
             statement = stmt.PrintStmt(expr)
         elif self.match([TokenType.LEFT_BRACE]):
@@ -141,6 +144,18 @@ class Parser:
             TokenType.SEMICOLON, "Expect ; at the end of statement."
         )
         return statement
+
+    def ifStatement(self):
+        self.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+        condition = self.expression()
+        self.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+
+        then_branch = self.statement()
+        else_branch = None
+        if self.match([TokenType.ELSE]):
+            else_branch = self.statement()
+        
+        return stmt.IfStmt(condition, then_branch, else_branch)
 
     def varDecl(self):
         name = self.consume(TokenType.IDENTIFIER, "Expect variable name.")

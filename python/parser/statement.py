@@ -2,40 +2,44 @@
     do not modify manually the content."""
 
 from dataclasses import dataclass
-
-
 class StatementBase:
     pass
 
-
 @dataclass
 class ExpressionStmt(StatementBase):
-    expr: "ExpressionBase"
+    expr: 'ExpressionBase'
 
     def accept(self, visitor):
         return visitor.visit_expression_stmt(self)
 
-
 @dataclass
 class PrintStmt(StatementBase):
-    expr: "ExpressionBase"
+    expr: 'ExpressionBase'
 
     def accept(self, visitor):
         return visitor.visit_print_stmt(self)
 
-
 @dataclass
 class VarStmt(StatementBase):
-    name: "Token"
-    initialiser: "ExpressionBase"
+    name: 'Token'
+    initialiser: 'ExpressionBase'
 
     def accept(self, visitor):
         return visitor.visit_var_stmt(self)
 
-
 @dataclass
 class BlockStmt(StatementBase):
-    statements: "List[StatementBase]"
+    statements: 'List[StatementBase]'
 
     def accept(self, visitor):
         return visitor.visit_block_stmt(self)
+
+@dataclass
+class IfStmt(StatementBase):
+    condition: 'ExpressionBase'
+    thenBranch: 'StatementBase'
+    elseBranch: 'StatementBase'
+
+    def accept(self, visitor):
+        return visitor.visit_if_stmt(self)
+
