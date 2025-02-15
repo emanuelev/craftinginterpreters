@@ -240,6 +240,26 @@ class Interpreter:
         self.environment.set(expression.name, val)
         return val
 
+    def visit_logical_expr(self, expression) -> str:
+        """Visits a logical AND or OR expression. Short-circuits to as soon as
+        one evaluates to false.
+
+        Args:
+            expression: logical expression to visit.
+        Returns:
+            boolean value representing the result of the logical expression.
+        """
+        left = expression.left.accept(self)
+        match expression.token.token_type:
+            case TokenType.OR:
+                if self.is_true(left):
+                    return left
+            case TokenType.AND:
+                if not self.is_true(left):
+                    return left
+        
+        return expression.right.accept(self)
+
     def visit_block_stmt(self, statement_list) -> str:
         """Visits a variable expression and returns it's value.
 
@@ -275,6 +295,4 @@ class Interpreter:
             return self.evaluate(ifStmt.thenBranch)
         elif ifStmt.elseBranch is not None:
             return self.evaluate(ifStmt.elseBranch)
-        
-
         

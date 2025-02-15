@@ -17,7 +17,9 @@ blockStmt      → "{" declaration "}"
 
 statement      → expression ";" | print
 expression     → assignment; 
-assignment     → IDENTIFIER "=" assignment | comma;
+assignment     → IDENTIFIER "=" assignment | logic_or;
+logic_or       → logic_and ("or" logic_and)* ;
+logic_and      → comma ("and" comma)* ;
 comma          → equality (, equality)*;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -200,7 +202,7 @@ class Parser:
         # but it will correctly throw an error for when an r-value is used as
         # l-value:
         # > a + b = c;
-        expr = self.comma()
+        expr = self.logical_or()
         if self.match([TokenType.EQUAL]):
             equals = self.previous()
             value = self.assignment()
@@ -209,6 +211,23 @@ class Parser:
             else:
                 self.error(equals, "Invalid assignment target.")
         return expr
+    
+    def logical_or(self):
+        left = self.logical_and()
+        if self.match([TokenType.OR]):
+            op = self.previous()
+            right = self.logical_or()
+            return exp.LogicalExpr(left, op, right)
+        return left
+
+    def logical_and(self):
+        left = self.comma()
+        if self.match([TokenType.AND]):
+            op = self.previous()
+            right = self.logical_and()
+            return exp.LogicalExpr(left, op, right)
+        return left
+
 
     def comma(self):
         """Parses comma rule.
