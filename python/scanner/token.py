@@ -1,5 +1,4 @@
-"""This module defines the Token class for the lox scanner.
-"""
+"""This module defines the Token class for the lox scanner."""
 
 from dataclasses import dataclass
 from scanner.token_type import TokenType

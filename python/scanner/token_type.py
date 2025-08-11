@@ -1,5 +1,4 @@
-"""This module contains the token types supported by lox.
-"""
+"""This module contains the token types supported by lox."""
 
 from enum import Enum, auto
 

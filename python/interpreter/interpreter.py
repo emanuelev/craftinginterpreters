@@ -72,8 +72,8 @@ class Interpreter:
         return True
 
     def is_equal(self, lhs: object, rhs: object) -> bool:
-        """ Compares two objects for equality. If both are None,
-        it returns True, False if only one of the two is None. 
+        """Compares two objects for equality. If both are None,
+        it returns True, False if only one of the two is None.
 
         Args:
             lhs: left hand-side of the comparison.
@@ -104,8 +104,7 @@ class Interpreter:
         match expression.token.token_type:
             case TokenType.MINUS:
                 if not isinstance(right, float):
-                    raise RuntimeError(expression.token, 
-                                    "Operand must be a number.")
+                    raise RuntimeError(expression.token, "Operand must be a number.")
                 value = -float(right)
                 return value
             case TokenType.BANG:
@@ -134,9 +133,10 @@ class Interpreter:
                     return str(left) + str(right)
                 elif isinstance(left, float) and isinstance(right, float):
                     return float(left) + float(right)
-                raise RuntimeError(expression.token, 
-                                   "Operands must be two numbers or two strings.")
-                
+                raise RuntimeError(
+                    expression.token, "Operands must be two numbers or two strings."
+                )
+
             case TokenType.STAR:
                 self.check_operands(expression.token, left, right)
                 return float(left) * float(right)
@@ -190,7 +190,6 @@ class Interpreter:
         for op in operands:
             if not isinstance(op, float):
                 raise RuntimeError(token, "Operands must be numbers.")
-
 
     def visit_expression_stmt(self, expression_stmt):
         """Visits an expression statement and returns it's value.
@@ -257,7 +256,7 @@ class Interpreter:
             case TokenType.AND:
                 if not self.is_true(left):
                     return left
-        
+
         return expression.right.accept(self)
 
     def visit_block_stmt(self, statement_list) -> str:
@@ -283,7 +282,7 @@ class Interpreter:
             raise e
 
     def visit_if_stmt(self, ifStmt) -> str:
-        """Visits if-else statement. If condition is 
+        """Visits if-else statement. If condition is
 
         Args:
             ifStmt: if statement to be evaluated
@@ -295,4 +294,3 @@ class Interpreter:
             return self.evaluate(ifStmt.thenBranch)
         elif ifStmt.elseBranch is not None:
             return self.evaluate(ifStmt.elseBranch)
-        

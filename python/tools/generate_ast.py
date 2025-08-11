@@ -5,7 +5,7 @@ The generator passes a .gr file in which each line follows the following format.
 The first line specifies the base class name from which all inherit from
 and the suffix used for the child classes:
     BaseClassName Suffix
-The child classes are specified in subsequent lines as 
+The child classes are specified in subsequent lines as
     Name arg1 arg1_type arg2 arg2_type ... argn argn_type
 
 Then this will generate a class in the following form:
@@ -69,7 +69,9 @@ def generate_ast(grammar: str):
             output += f"    {var}: '{var_type}'\n"
         output += "\n"
         output += "    def accept(self, visitor):\n"
-        output += f"        return visitor.visit_{name.lower()}_{suffix.lower()}(self)\n\n"
+        output += (
+            f"        return visitor.visit_{name.lower()}_{suffix.lower()}(self)\n\n"
+        )
     return output
 
 

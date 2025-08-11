@@ -4,3 +4,4 @@ Print   expr ExpressionBase
 Var     name Token initialiser ExpressionBase
 Block   statements List[StatementBase]
 If      condition ExpressionBase thenBranch StatementBase elseBranch StatementBase
+While   condition ExpressionBase body StatementBase

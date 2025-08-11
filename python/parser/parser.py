@@ -9,14 +9,15 @@ declaration    → varDecl
 
 varDecl        -> "var" IDENTIFIER ("=" expression)? ";"
 
-statement      → expressionStmt | printStmt | blockStmt | ifStmt
+statement      → expressionStmt | printStmt | blockStmt | ifStmt | whileStmt
 ifStmt         → "if (" expression ")" statement ("else" statement)?
 expressionStmt → expression ";"
 printStmt      → "print" expression ";"
+whileStmt      → "while (" expression ")" statement
 blockStmt      → "{" declaration "}"
 
 statement      → expression ";" | print
-expression     → assignment; 
+expression     → assignment;
 assignment     → IDENTIFIER "=" assignment | logic_or;
 logic_or       → logic_and ("or" logic_and)* ;
 logic_and      → comma ("and" comma)* ;
@@ -142,9 +143,7 @@ class Parser:
         else:
             statement = stmt.ExpressionStmt(self.expression())
 
-        self.consume(
-            TokenType.SEMICOLON, "Expect ; at the end of statement."
-        )
+        self.consume(TokenType.SEMICOLON, "Expect ; at the end of statement.")
         return statement
 
     def ifStatement(self):
@@ -156,7 +155,7 @@ class Parser:
         else_branch = None
         if self.match([TokenType.ELSE]):
             else_branch = self.statement()
-        
+
         return stmt.IfStmt(condition, then_branch, else_branch)
 
     def varDecl(self):
@@ -173,9 +172,7 @@ class Parser:
 
     def block(self):
         statements = []
-        while (
-            self.peek().token_type != TokenType.RIGHT_BRACE and not self.end()
-        ):
+        while self.peek().token_type != TokenType.RIGHT_BRACE and not self.end():
             statements.append(self.declaration())
         self.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
         return statements
@@ -211,7 +208,7 @@ class Parser:
             else:
                 self.error(equals, "Invalid assignment target.")
         return expr
-    
+
     def logical_or(self):
         left = self.logical_and()
         if self.match([TokenType.OR]):
@@ -227,7 +224,6 @@ class Parser:
             right = self.logical_and()
             return exp.LogicalExpr(left, op, right)
         return left
-
 
     def comma(self):
         """Parses comma rule.

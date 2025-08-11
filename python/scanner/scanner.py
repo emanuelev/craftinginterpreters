@@ -1,5 +1,4 @@
-"""This module implements the scanner logic for the jlox language
-"""
+"""This module implements the scanner logic for the jlox language"""
 
 import logging
 from typing import List
@@ -214,15 +213,11 @@ class Scanner:
                 )
             case "=":
                 self.append_token(
-                    TokenType.EQUAL_EQUAL
-                    if self.match("=")
-                    else TokenType.EQUAL
+                    TokenType.EQUAL_EQUAL if self.match("=") else TokenType.EQUAL
                 )
             case ">":
                 self.append_token(
-                    TokenType.GREATER_EQUAL
-                    if self.match("=")
-                    else TokenType.GREATER
+                    TokenType.GREATER_EQUAL if self.match("=") else TokenType.GREATER
                 )
             case "<":
                 self.append_token(
@@ -252,6 +247,4 @@ class Scanner:
                 elif c.isalpha():
                     self.parse_identifier()
                 else:
-                    logging.error(
-                        f"line {self.line}: Unexpected character {c}"
-                    )
+                    logging.error(f"line {self.line}: Unexpected character {c}")
