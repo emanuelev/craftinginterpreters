@@ -104,7 +104,9 @@ class Interpreter:
         match expression.token.token_type:
             case TokenType.MINUS:
                 if not isinstance(right, float):
-                    raise RuntimeError(expression.token, "Operand must be a number.")
+                    raise RuntimeError(
+                        expression.token, "Operand must be a number."
+                    )
                 value = -float(right)
                 return value
             case TokenType.BANG:
@@ -134,7 +136,8 @@ class Interpreter:
                 elif isinstance(left, float) and isinstance(right, float):
                     return float(left) + float(right)
                 raise RuntimeError(
-                    expression.token, "Operands must be two numbers or two strings."
+                    expression.token,
+                    "Operands must be two numbers or two strings.",
                 )
 
             case TokenType.STAR:
@@ -294,3 +297,14 @@ class Interpreter:
             return self.evaluate(ifStmt.thenBranch)
         elif ifStmt.elseBranch is not None:
             return self.evaluate(ifStmt.elseBranch)
+
+    def visit_while_stmt(self, whileStmt):
+        """Visits while statement. If condition is
+
+        Args:
+            whileStmt: while statement evaluated
+
+        Returns:
+        """
+        while self.is_true(self.evaluate(whileStmt.condition)):
+            self.evaluate(whileStmt.body)

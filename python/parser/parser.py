@@ -137,6 +137,8 @@ class Parser:
         elif self.match([TokenType.PRINT]):
             expr = self.expression()
             statement = stmt.PrintStmt(expr)
+        elif self.match([TokenType.WHILE]):
+            return self.whileStatement()
         elif self.match([TokenType.LEFT_BRACE]):
             statement = stmt.BlockStmt(self.block())
             return statement
@@ -158,6 +160,15 @@ class Parser:
 
         return stmt.IfStmt(condition, then_branch, else_branch)
 
+    def whileStatement(self):
+        self.consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+        condition = self.expression()
+        self.consume(
+            TokenType.RIGHT_PAREN, "Expect ')' after while condition."
+        )
+        body = self.statement()
+        return stmt.WhileStmt(condition, body)
+
     def varDecl(self):
         name = self.consume(TokenType.IDENTIFIER, "Expect variable name.")
 
@@ -172,7 +183,9 @@ class Parser:
 
     def block(self):
         statements = []
-        while self.peek().token_type != TokenType.RIGHT_BRACE and not self.end():
+        while (
+            self.peek().token_type != TokenType.RIGHT_BRACE and not self.end()
+        ):
             statements.append(self.declaration())
         self.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
         return statements
