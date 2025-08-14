@@ -14,8 +14,10 @@ ifStmt         → "if (" expression ")" statement ("else" statement)?
 expressionStmt → expression ";"
 printStmt      → "print" expression ";"
 whileStmt      → "while (" expression ")" statement
+forStmt        → "for" "(" ( varDecl | exprStmt | ";" )
+                 expression? ";"
+                 expression? ")" statement ;
 blockStmt      → "{" declaration "}"
-
 statement      → expression ";" | print
 expression     → assignment;
 assignment     → IDENTIFIER "=" assignment | logic_or;
@@ -137,15 +139,23 @@ class Parser:
         elif self.match([TokenType.PRINT]):
             expr = self.expression()
             statement = stmt.PrintStmt(expr)
+            self.consume(
+                TokenType.SEMICOLON, "Expect ; at the end of statement."
+            )
+            return statement
         elif self.match([TokenType.WHILE]):
             return self.whileStatement()
+        elif self.match([TokenType.FOR]):
+            return self.forStatement()
         elif self.match([TokenType.LEFT_BRACE]):
             statement = stmt.BlockStmt(self.block())
             return statement
         else:
-            statement = stmt.ExpressionStmt(self.expression())
+            return self.expressionStatement()
 
-        self.consume(TokenType.SEMICOLON, "Expect ; at the end of statement.")
+    def expressionStatement(self):
+        statement = stmt.ExpressionStmt(self.expression())
+        self.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return statement
 
     def ifStatement(self):
@@ -168,6 +178,40 @@ class Parser:
         )
         body = self.statement()
         return stmt.WhileStmt(condition, body)
+
+    def forStatement(self):
+        self.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.")
+
+        # If next token is a semicolon, it means we skipped the
+        # initialiser.
+        if self.match([TokenType.SEMICOLON]):
+            initialiser = stmt.ExpressionStmt(exp.LiteralExpr(True))
+        else:
+            if self.match([TokenType.VAR]):
+                initialiser = self.varDecl()
+            else:
+                initialiser = self.expressionStatement()
+
+        if self.match([TokenType.SEMICOLON]):
+            condition = stmt.ExpressionStmt(exp.LiteralExpr(True))
+        else:
+            condition = self.expressionStatement()
+
+        if self.match([TokenType.RIGHT_PAREN]):
+            increment = stmt.ExpressionStmt(exp.LiteralExpr(True))
+        else:
+            increment = stmt.ExpressionStmt(self.expression())
+            self.consume(
+                TokenType.RIGHT_PAREN, "Expect ')' after for increment."
+            )
+
+        for_body = self.statement()
+        while_body = stmt.BlockStmt([for_body, increment])
+        while_stmt = stmt.WhileStmt(condition.expr, while_body)
+
+        block_stmt = stmt.BlockStmt([initialiser, while_stmt])
+
+        return block_stmt
 
     def varDecl(self):
         name = self.consume(TokenType.IDENTIFIER, "Expect variable name.")
