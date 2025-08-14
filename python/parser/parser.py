@@ -154,6 +154,8 @@ class Parser:
             return self.expressionStatement()
 
     def expressionStatement(self):
+        if self.match([TokenType.SEMICOLON]):
+            return stmt.ExpressionStmt(exp.LiteralExpr(True))
         statement = stmt.ExpressionStmt(self.expression())
         self.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return statement
