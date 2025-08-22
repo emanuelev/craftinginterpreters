@@ -58,3 +58,9 @@ class WhileStmt(StatementBase):
 
     def accept(self, visitor):
         return visitor.visit_while_stmt(self)
+
+
+@dataclass
+class BreakStmt(StatementBase):
+    def accept(self, visitor):
+        return visitor.visit_break_stmt(self)

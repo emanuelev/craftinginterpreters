@@ -30,6 +30,10 @@ class RuntimeError(Exception):
     message: str
 
 
+class BreakStatement(Exception):
+    pass
+
+
 @dataclass
 class ErrorHandler:
     """Class for handling errors throughout the lox interpreter lifespan.
@@ -48,7 +52,9 @@ class ErrorHandler:
     def report_errors(self):
         for e in self.errors:
             if isinstance(e, ScannerError):
-                print(f"[line {str(e.line)}] Error: {e.message}", file=sys.stderr)
+                print(
+                    f"[line {str(e.line)}] Error: {e.message}", file=sys.stderr
+                )
             elif e.token.token_type == TokenType.EOF:
                 print(
                     f"[line {str(e.token.line)}] Error at end: {e.message}",
@@ -63,4 +69,7 @@ class ErrorHandler:
     def report_runtime_error(self):
         """Reports a runtime error for a given operator."""
         print(f"{self.runtime_error.message}", file=sys.stderr)
-        print(f"[line {self.runtime_error.token.line}] in script", file=sys.stderr)
+        print(
+            f"[line {self.runtime_error.token.line}] in script",
+            file=sys.stderr,
+        )

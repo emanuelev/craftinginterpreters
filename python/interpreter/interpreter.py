@@ -8,7 +8,7 @@ from parser import expression as exp
 from parser import statement as stmt
 from scanner.token import Token
 from scanner.token_type import TokenType
-from utils.exceptions import RuntimeError, ErrorHandler
+from utils.exceptions import RuntimeError, ErrorHandler, BreakStatement
 from utils.print import pretty_print
 
 
@@ -299,12 +299,26 @@ class Interpreter:
             return self.evaluate(ifStmt.elseBranch)
 
     def visit_while_stmt(self, whileStmt):
-        """Visits while statement. If condition is
+        """Visits while statement.
 
         Args:
             whileStmt: while statement evaluated
 
         Returns:
         """
-        while self.is_true(self.evaluate(whileStmt.condition)):
-            self.evaluate(whileStmt.body)
+        try:
+            while self.is_true(self.evaluate(whileStmt.condition)):
+                self.evaluate(whileStmt.body)
+        except BreakStatement:
+            return
+
+    def visit_break_stmt(self, breakStmt):
+        """Visits Break statement. This is an empty statement that it's used to
+        jump out of loops.
+
+        Args:
+            breakStmt: while statement evaluated
+
+        Returns:
+        """
+        raise BreakStatement

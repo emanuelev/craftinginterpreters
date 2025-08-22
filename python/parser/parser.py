@@ -213,10 +213,12 @@ class Parser:
                 TokenType.RIGHT_PAREN, "Expect ')' after for increment."
             )
 
+        self.nested_loops += 1
         for_body = self.statement()
+        self.nested_loops -= 1
+
         while_body = stmt.BlockStmt([for_body, increment])
         while_stmt = stmt.WhileStmt(condition.expr, while_body)
-
         block_stmt = stmt.BlockStmt([initialiser, while_stmt])
 
         return block_stmt
@@ -230,7 +232,7 @@ class Parser:
             TokenType.SEMICOLON,
             "Expect ';' after break statement.",
         )
-        pass
+        return stmt.BreakStmt()
 
     def varDecl(self):
         name = self.consume(TokenType.IDENTIFIER, "Expect variable name.")
