@@ -53,6 +53,7 @@ class Parser:
     error_handler: ErrorHandler
 
     current: int = 0
+    nested_loops: int = 0
 
     def parse(self):
         statement_list = []
@@ -150,6 +151,8 @@ class Parser:
         elif self.match([TokenType.LEFT_BRACE]):
             statement = stmt.BlockStmt(self.block())
             return statement
+        elif self.match([TokenType.BREAK]):
+            return self.breakStatement()
         else:
             return self.expressionStatement()
 
@@ -178,8 +181,11 @@ class Parser:
         self.consume(
             TokenType.RIGHT_PAREN, "Expect ')' after while condition."
         )
+        self.nested_loops += 1
         body = self.statement()
-        return stmt.WhileStmt(condition, body)
+        statement = stmt.WhileStmt(condition, body)
+        self.nested_loops -= 1
+        return statement
 
     def forStatement(self):
         self.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.")
@@ -214,6 +220,17 @@ class Parser:
         block_stmt = stmt.BlockStmt([initialiser, while_stmt])
 
         return block_stmt
+
+    def breakStatement(self):
+        if self.nested_loops == 0:
+            self.error(
+                self.peek(), "Break statement allowed only inside loops."
+            )
+        self.consume(
+            TokenType.SEMICOLON,
+            "Expect ';' after break statement.",
+        )
+        pass
 
     def varDecl(self):
         name = self.consume(TokenType.IDENTIFIER, "Expect variable name.")
